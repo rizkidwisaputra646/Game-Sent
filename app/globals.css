@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #080b18;
+  --bg-secondary: #0d1224;
+  --bg-card: #11182b;
+  --accent-primary: #8b5cf6;
+  --accent-secondary: #3b82f6;
+  --accent-cyan: #22d3ee;
+  --status-positive: #22c55e;
+  --status-negative: #f43f5e;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --border-hud: #263149;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+* {
+  border-color: var(--border-hud);
+}
+
+html,
+body {
+  background-color: #080b18;
+  color: #f1f5f9;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-mono-num {
+  font-family: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Subtle cyber geometric grid */
+.cyber-grid-bg {
+  background-image:
+    linear-gradient(to right, rgba(38, 49, 73, 0.22) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(38, 49, 73, 0.22) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Subtle HUD scanning line */
+@keyframes hudScan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+.hud-scanline {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(34, 211, 238, 0.035) 50%,
+    transparent 100%
+  );
+  height: 120px;
+  animation: hudScan 14s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hud-scanline {
+    animation: none;
+    display: none;
+  }
+}
+
+/* Command card styling */
+.hud-card {
+  background: linear-gradient(180deg, rgba(17, 24, 43, 0.96) 0%, rgba(13, 18, 36, 0.97) 100%);
+  border: 1px solid #263149;
+  box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.75);
+}
+
+.hud-card-interactive {
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.hud-card-interactive:hover {
+  border-color: rgba(139, 92, 246, 0.55);
+  box-shadow: 0 0 0 1px rgba(139, 92, 246, 0.2), 0 16px 36px -16px rgba(59, 130, 246, 0.25);
+}
+
+/* Custom sleek dark scrollbar */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #080b18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #263149;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #3b4b6e;
+}

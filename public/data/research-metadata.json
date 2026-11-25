@@ -1,0 +1,344 @@
+{
+  "sourceFile": "dataset_berlabel_sentimen_dota2_mobilelegends.csv",
+  "notebookFile": "Klasifikasi_Sentimen_Dota2_dan_Mobile_Legends.ipynb",
+  "dataset": {
+    "totalReviews": 4997,
+    "positiveReviews": 2216,
+    "negativeReviews": 2781,
+    "positivePct": 44.35,
+    "negativePct": 55.65,
+    "nullCount": 0,
+    "duplicateCount": 0,
+    "columns": [
+      "id",
+      "game",
+      "review",
+      "label",
+      "label_source"
+    ],
+    "games": {
+      "Mobile Legends": {
+        "total": 2499,
+        "positive": 788,
+        "negative": 1711,
+        "positivePct": 31.53,
+        "negativePct": 68.47,
+        "labelSources": {
+          "model": 2499
+        },
+        "avgCharLength": 174.8,
+        "avgWordCount": 32.4
+      },
+      "Dota 2": {
+        "total": 2498,
+        "positive": 1428,
+        "negative": 1070,
+        "positivePct": 57.17,
+        "negativePct": 42.83,
+        "labelSources": {
+          "voted_up Steam": 2498
+        },
+        "avgCharLength": 288.9,
+        "avgWordCount": 52.1
+      }
+    },
+    "split": {
+      "trainSize": 3997,
+      "testSize": 1000,
+      "testRatio": 0.2,
+      "randomState": 42,
+      "stratified": true,
+      "trainDistribution": {
+        "negative": 2224,
+        "positive": 1773
+      },
+      "testDistribution": {
+        "negative": 557,
+        "positive": 443
+      }
+    },
+    "topTerms": {
+      "positive": [
+        {
+          "term": "game",
+          "meanTfidf": 0.06986
+        },
+        {
+          "term": "play",
+          "meanTfidf": 0.03259
+        },
+        {
+          "term": "good",
+          "meanTfidf": 0.03039
+        },
+        {
+          "term": "playing",
+          "meanTfidf": 0.02914
+        },
+        {
+          "term": "dota",
+          "meanTfidf": 0.02481
+        },
+        {
+          "term": "fun",
+          "meanTfidf": 0.02006
+        },
+        {
+          "term": "like",
+          "meanTfidf": 0.01989
+        },
+        {
+          "term": "life",
+          "meanTfidf": 0.01945
+        },
+        {
+          "term": "years",
+          "meanTfidf": 0.01842
+        },
+        {
+          "term": "great",
+          "meanTfidf": 0.01814
+        },
+        {
+          "term": "love",
+          "meanTfidf": 0.018
+        },
+        {
+          "term": "recommend",
+          "meanTfidf": 0.01522
+        },
+        {
+          "term": "time",
+          "meanTfidf": 0.01471
+        },
+        {
+          "term": "best",
+          "meanTfidf": 0.01466
+        },
+        {
+          "term": "friends",
+          "meanTfidf": 0.01429
+        }
+      ],
+      "negative": [
+        {
+          "term": "game",
+          "meanTfidf": 0.0553
+        },
+        {
+          "term": "matchmaking",
+          "meanTfidf": 0.03053
+        },
+        {
+          "term": "play",
+          "meanTfidf": 0.02473
+        },
+        {
+          "term": "players",
+          "meanTfidf": 0.02444
+        },
+        {
+          "term": "just",
+          "meanTfidf": 0.02202
+        },
+        {
+          "term": "match",
+          "meanTfidf": 0.02168
+        },
+        {
+          "term": "team",
+          "meanTfidf": 0.02061
+        },
+        {
+          "term": "fix",
+          "meanTfidf": 0.01997
+        },
+        {
+          "term": "like",
+          "meanTfidf": 0.01926
+        },
+        {
+          "term": "teammates",
+          "meanTfidf": 0.01691
+        },
+        {
+          "term": "don",
+          "meanTfidf": 0.01669
+        },
+        {
+          "term": "playing",
+          "meanTfidf": 0.01669
+        },
+        {
+          "term": "making",
+          "meanTfidf": 0.01654
+        },
+        {
+          "term": "bad",
+          "meanTfidf": 0.01634
+        },
+        {
+          "term": "time",
+          "meanTfidf": 0.01603
+        }
+      ]
+    }
+  },
+  "models": {
+    "tfidf": {
+      "vocabularySize": 5000,
+      "ngramRange": [
+        1,
+        2
+      ],
+      "minDf": 2,
+      "maxFeatures": 5000,
+      "stopWords": "english (318 terms)",
+      "norm": "l2",
+      "smoothIdf": true,
+      "sublinearTf": false,
+      "tokenPattern": "(?u)\\b\\w\\w+\\b",
+      "trainNnz": 77055
+    },
+    "naiveBayes": {
+      "name": "Multinomial Naive Bayes",
+      "params": {
+        "alpha": 1.0,
+        "fitPrior": true,
+        "classes": [
+          "negative",
+          "positive"
+        ],
+        "classCount": [
+          2224,
+          1773
+        ],
+        "classLogPrior": [
+          -0.5862367,
+          -0.81287105
+        ],
+        "classPriorProb": [
+          0.556417,
+          0.443583
+        ],
+        "nFeatures": 5000
+      },
+      "evaluation": {
+        "accuracy": 0.805,
+        "precisionPositive": 0.8115577889447236,
+        "recallPositive": 0.7291196388261851,
+        "f1Positive": 0.7681331747919143,
+        "confusionMatrix": {
+          "labels": [
+            "negative",
+            "positive"
+          ],
+          "matrix": [
+            [
+              482,
+              75
+            ],
+            [
+              120,
+              323
+            ]
+          ],
+          "tn": 482,
+          "fp": 75,
+          "fn": 120,
+          "tp": 323
+        },
+        "classificationReport": {
+          "negative": {
+            "precision": 0.8006644518272426,
+            "recall": 0.8653500897666068,
+            "f1Score": 0.8317515099223468,
+            "support": 557
+          },
+          "positive": {
+            "precision": 0.8115577889447236,
+            "recall": 0.7291196388261851,
+            "f1Score": 0.7681331747919143,
+            "support": 443
+          },
+          "macroAvg": {
+            "precision": 0.8061111203859831,
+            "recall": 0.797234864296396,
+            "f1Score": 0.7999423423571306,
+            "support": 1000
+          },
+          "weightedAvg": {
+            "precision": 0.8054902001702867,
+            "recall": 0.805,
+            "f1Score": 0.8035685874595652,
+            "support": 1000
+          }
+        }
+      }
+    },
+    "knn": {
+      "name": "K-Nearest Neighbors",
+      "params": {
+        "nNeighbors": 5,
+        "metric": "cosine",
+        "algorithm": "brute",
+        "weights": "uniform",
+        "trainingVectors": 3997,
+        "nFeatures": 5000,
+        "sparseNnz": 77055
+      },
+      "evaluation": {
+        "accuracy": 0.741,
+        "precisionPositive": 0.6932773109243697,
+        "recallPositive": 0.744920993227991,
+        "f1Positive": 0.7181719260065288,
+        "confusionMatrix": {
+          "labels": [
+            "negative",
+            "positive"
+          ],
+          "matrix": [
+            [
+              411,
+              146
+            ],
+            [
+              113,
+              330
+            ]
+          ],
+          "tn": 411,
+          "fp": 146,
+          "fn": 113,
+          "tp": 330
+        },
+        "classificationReport": {
+          "negative": {
+            "precision": 0.7843511450381679,
+            "recall": 0.7378815080789947,
+            "f1Score": 0.7604070305272895,
+            "support": 557
+          },
+          "positive": {
+            "precision": 0.6932773109243697,
+            "recall": 0.744920993227991,
+            "f1Score": 0.7181719260065288,
+            "support": 443
+          },
+          "macroAvg": {
+            "precision": 0.7388142279812688,
+            "recall": 0.7414012506534928,
+            "f1Score": 0.7392894782669092,
+            "support": 1000
+          },
+          "weightedAvg": {
+            "precision": 0.7440054365257553,
+            "recall": 0.741,
+            "f1Score": 0.7416968792245925,
+            "support": 1000
+          }
+        }
+      }
+    }
+  }
+}
