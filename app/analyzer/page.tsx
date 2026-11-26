@@ -249,6 +249,7 @@ export default function AnalyzerPage() {
       <PageHeader
         title="Sentiment Analyzer"
         tag="INFERENCE ENGINE"
+        speechText="SIAP KLASIFIKASI!"
         description="Uji prediksi klasifikasi sentimen ulasan game MOBA menggunakan model Multinomial Naive Bayes dan KNN secara langsung di browser lokal."
         badge={
           <span className="rounded-md border border-[#202020] bg-[#65C98A] px-2.5 py-0.5 font-mono-num text-[11px] font-bold text-[#171717] shadow-[1.5px_1.5px_0px_#202020]">

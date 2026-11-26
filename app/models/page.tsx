@@ -183,6 +183,7 @@ export default function ModelsPage() {
       <PageHeader
         title="Evaluasi Model &amp; Ekstraksi Fitur"
         tag="METODOLOGI ML"
+        speechText="CEK PERFORMA MODEL!"
         description="Detail arsitektur ekstraksi fitur TF-IDF serta perbandingan metrik ilmiah antara Multinomial Naive Bayes dan K-Nearest Neighbors pada hold-out test set."
         badge={
           <span className="rounded-md border border-[#202020] bg-[#65C98A] px-2.5 py-0.5 font-mono-num text-[11px] font-bold text-[#171717] shadow-[1.5px_1.5px_0px_#202020]">

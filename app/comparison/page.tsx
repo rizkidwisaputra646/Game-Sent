@@ -85,6 +85,7 @@ export default function ComparisonPage() {
       <PageHeader
         title="Game Comparison"
         tag="KOMPARASI MOBA"
+        speechText="DOTA 2 VS MLBB!"
         description="Analisis komparatif sebaran sentimen ulasan pemain antara Dota 2 (Steam) dan Mobile Legends: Bang Bang (Google Play Store) dengan konteks metodologis penelitian."
       />
 

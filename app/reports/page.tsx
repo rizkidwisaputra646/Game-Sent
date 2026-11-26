@@ -163,6 +163,7 @@ export default function ReportsPage() {
       <PageHeader
         title="Reports &amp; Export"
         tag="PUBLIKASI LAPORAN"
+        speechText="SIAP EKSPOR!"
         description="Hasil analisis sentimen, distribusi game MOBA, dan metrik evaluasi model dapat diekspor ke dokumen formal PDF, lembar kerja XLSX, atau file data CSV."
       />
 

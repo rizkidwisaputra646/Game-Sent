@@ -369,6 +369,7 @@ export default function DatasetsPage() {
       <PageHeader
         title="Dataset Explorer"
         tag="DATASET PENELITIAN &amp; IMPORT"
+        speechText="JELAJAHI ULASAN!"
         description="Jelajahi 4.997 ulasan berlabel pada dataset penelitian (Mobile Legends &amp; Dota 2), atau unggah file CSV/XLSX eksternal untuk analisis sentimen terpisah."
       />
 
