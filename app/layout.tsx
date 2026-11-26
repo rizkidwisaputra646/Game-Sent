@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Space_Grotesk } from "next/font/google";
 import { AppShell } from "@/components/layout/AppShell";
 import { GameSentProvider } from "@/components/providers/GameSentProvider";
@@ -23,9 +23,15 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "GameSent — Gaming Sentiment Research & Analytics Command Center",
+  title: "GameSent — Gaming Sentiment Research & Analytics",
   description:
-    "Platform analitik riset sentimen Mobile Legends & Dota 2 menggunakan TF-IDF, Multinomial Naive Bayes, dan K-Nearest Neighbors berbasis browser.",
+    "Platform analitik riset sentimen Mobile Legends & Dota 2 menggunakan TF-IDF, Multinomial Naive Bayes, dan K-Nearest Neighbors dengan visual Neo-Brutalism & Anime Editorial.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -36,9 +42,9 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased selection:bg-[#8B5CF6]/35 selection:text-[#F1F5F9]">
+      <body className="antialiased bg-[#F7F4EC] text-[#171717] selection:bg-[#A78BFA] selection:text-[#171717]">
         <GameSentProvider>
           <AppShell>{children}</AppShell>
         </GameSentProvider>

@@ -4,23 +4,27 @@ import React, { useState } from "react";
 import dynamic from "next/dynamic";
 import {
   CheckCircle2,
-  Cpu,
   Gauge,
   Layers,
   Play,
   Sliders,
-  Sparkles,
 } from "lucide-react";
 import {
-  ScrollReveal,
   SectionNavigationBar,
-  StaggerGroup,
-  StaggerItem,
   type SectionAnchor,
 } from "@/components/motion/ScrollPrimitives";
+import {
+  ComicPanelReveal,
+  ComicPopCallout,
+  ComicStaggerGroup,
+  ComicStaggerItem,
+  MangaShake,
+} from "@/components/motion/AnimeComicMotion";
 import { useGameSent } from "@/components/providers/GameSentProvider";
 import { CountUpNumber } from "@/components/ui/CountUpNumber";
-import { HudCard } from "@/components/ui/HudCard";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PrimaryButton } from "@/components/ui/Buttons";
+import { AlgorithmBadge } from "@/components/ui/StatusBadge";
 import type { ModelEvaluationMetrics } from "@/lib/data/types";
 import { inferenceClient } from "@/lib/ml/client";
 
@@ -32,7 +36,7 @@ const ModelComparisonBarChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[290px] animate-pulse rounded-lg bg-[#0D1224]" />
+      <div className="h-[290px] animate-pulse rounded-xl border-2 border-[#202020] bg-[#FFFDFC]" />
     ),
   }
 );
@@ -43,90 +47,88 @@ const TopTermsBarChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[260px] animate-pulse rounded-lg bg-[#0D1224]" />
+      <div className="h-[260px] animate-pulse rounded-xl border-2 border-[#202020] bg-[#FFFDFC]" />
     ),
   }
 );
 
 const MODEL_SECTIONS: SectionAnchor[] = [
-  { id: "sec-tfidf", code: "01", label: "TF-IDF Pipeline" },
-  { id: "sec-classifiers", code: "02", label: "NB & KNN" },
-  { id: "sec-comparison", code: "03", label: "Perbandingan & Latensi" },
+  { id: "sec-tfidf", code: "01", label: "Pipeline TF-IDF" },
+  { id: "sec-classifiers", code: "02", label: "Naive Bayes & KNN" },
+  { id: "sec-comparison", code: "03", label: "Komparasi & Latensi" },
 ];
 
 function ConfusionMatrixGrid({
   title,
-  accent,
   evaluation,
 }: {
   title: string;
-  accent: string;
   evaluation: ModelEvaluationMetrics;
 }) {
   const { tn, fp, fn, tp } = evaluation.confusionMatrix;
   const total = tn + fp + fn + tp;
 
   return (
-    <ScrollReveal variant="scale-reveal">
-      <div className="rounded-xl border border-[#263149] bg-[#080B18]/80 p-4">
-        <div className="mb-3 flex items-center justify-between">
-          <h3 className="font-display text-sm font-semibold text-[#F1F5F9]">
-            {title}
-          </h3>
-          <span className="font-mono-num text-[11px] text-[#94A3B8]">
-            n = {total} (Test Set)
-          </span>
-        </div>
-
-        <div className="grid grid-cols-[auto_1fr_1fr] gap-2 text-center text-xs">
-          <div />
-          <div className="pb-1 font-mono-num text-[11px] text-[#94A3B8]">
-            Pred: Negative
-          </div>
-          <div className="pb-1 font-mono-num text-[11px] text-[#94A3B8]">
-            Pred: Positive
-          </div>
-
-          <div className="flex items-center justify-end pr-2 font-mono-num text-[11px] text-[#94A3B8]">
-            Actual: Neg
-          </div>
-          <div
-            className="rounded-lg border p-3"
-            style={{
-              borderColor: `${accent}55`,
-              backgroundColor: `${accent}18`,
-            }}
-          >
-            <div className="font-mono-num text-xl font-bold text-[#F1F5F9]">
-              <CountUpNumber value={tn} durationMs={850} />
-            </div>
-            <div className="text-[10px] text-[#94A3B8]">True Negative</div>
-          </div>
-          <div className="rounded-lg border border-[#F43F5E]/30 bg-[#F43F5E]/10 p-3">
-            <div className="font-mono-num text-xl font-bold text-[#FDA4AF]">
-              <CountUpNumber value={fp} durationMs={850} />
-            </div>
-            <div className="text-[10px] text-[#94A3B8]">False Positive</div>
-          </div>
-
-          <div className="flex items-center justify-end pr-2 font-mono-num text-[11px] text-[#94A3B8]">
-            Actual: Pos
-          </div>
-          <div className="rounded-lg border border-[#F43F5E]/30 bg-[#F43F5E]/10 p-3">
-            <div className="font-mono-num text-xl font-bold text-[#FDA4AF]">
-              <CountUpNumber value={fn} durationMs={850} />
-            </div>
-            <div className="text-[10px] text-[#94A3B8]">False Negative</div>
-          </div>
-          <div className="rounded-lg border border-[#22C55E]/40 bg-[#22C55E]/15 p-3">
-            <div className="font-mono-num text-xl font-bold text-[#22C55E]">
-              <CountUpNumber value={tp} durationMs={850} />
-            </div>
-            <div className="text-[10px] text-[#94A3B8]">True Positive</div>
-          </div>
-        </div>
+    <div className="rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-4 shadow-[2px_2px_0px_#202020]">
+      <div className="mb-3 flex items-center justify-between">
+        <h4 className="font-display text-sm font-bold text-[#171717]">{title}</h4>
+        <span className="font-mono-num text-[11px] font-bold text-[#666666]">
+          n = {total} (Test Set)
+        </span>
       </div>
-    </ScrollReveal>
+
+      <ComicStaggerGroup staggerMs={55} className="grid grid-cols-[auto_1fr_1fr] gap-2 text-center text-xs">
+        <div />
+        <div className="pb-1 font-mono-num text-[11px] font-bold text-[#171717]">
+          Prediksi: Negatif
+        </div>
+        <div className="pb-1 font-mono-num text-[11px] font-bold text-[#171717]">
+          Prediksi: Positif
+        </div>
+
+        {/* Actual Negative Row */}
+        <div className="flex items-center justify-end pr-2 font-mono-num text-[11px] font-bold text-[#171717]">
+          Aktual Negatif
+        </div>
+        <ComicStaggerItem>
+          <div className="rounded-lg border-2 border-[#202020] bg-[#FFFDFC] p-3 shadow-[1.5px_1.5px_0px_#202020]">
+            <div className="font-mono-num text-xl font-bold text-[#171717]">
+              <CountUpNumber value={tn} durationMs={650} />
+            </div>
+            <div className="text-[10px] font-bold text-[#666666] uppercase mt-0.5">True Negative (TN)</div>
+          </div>
+        </ComicStaggerItem>
+        <ComicStaggerItem>
+          <div className="rounded-lg border-2 border-[#202020] bg-[#FA7777]/25 p-3 shadow-[1.5px_1.5px_0px_#202020]">
+            <div className="font-mono-num text-xl font-bold text-[#BA2A2A]">
+              <CountUpNumber value={fp} durationMs={650} />
+            </div>
+            <div className="text-[10px] font-bold text-[#BA2A2A] uppercase mt-0.5">False Positive (FP)</div>
+          </div>
+        </ComicStaggerItem>
+
+        {/* Actual Positive Row */}
+        <div className="flex items-center justify-end pr-2 font-mono-num text-[11px] font-bold text-[#171717]">
+          Aktual Positif
+        </div>
+        <ComicStaggerItem>
+          <div className="rounded-lg border-2 border-[#202020] bg-[#FA7777]/25 p-3 shadow-[1.5px_1.5px_0px_#202020]">
+            <div className="font-mono-num text-xl font-bold text-[#BA2A2A]">
+              <CountUpNumber value={fn} durationMs={650} />
+            </div>
+            <div className="text-[10px] font-bold text-[#BA2A2A] uppercase mt-0.5">False Negative (FN)</div>
+          </div>
+        </ComicStaggerItem>
+        <ComicStaggerItem>
+          <div className="rounded-lg border-2 border-[#202020] bg-[#65C98A]/35 p-3 shadow-[1.5px_1.5px_0px_#202020]">
+            <div className="font-mono-num text-xl font-bold text-[#228448]">
+              <CountUpNumber value={tp} durationMs={650} />
+            </div>
+            <div className="text-[10px] font-bold text-[#228448] uppercase mt-0.5">True Positive (TP)</div>
+          </div>
+        </ComicStaggerItem>
+      </ComicStaggerGroup>
+    </div>
   );
 }
 
@@ -178,30 +180,44 @@ export default function ModelsPage() {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Evaluasi Model &amp; Ekstraksi Fitur"
+        tag="METODOLOGI ML"
+        description="Detail arsitektur ekstraksi fitur TF-IDF serta perbandingan metrik ilmiah antara Multinomial Naive Bayes dan K-Nearest Neighbors pada hold-out test set."
+        badge={
+          <span className="rounded-md border border-[#202020] bg-[#65C98A] px-2.5 py-0.5 font-mono-num text-[11px] font-bold text-[#171717] shadow-[1.5px_1.5px_0px_#202020]">
+            {modelStatus.ready ? "Model Engine Siap" : "Memuat..."}
+          </span>
+        }
+      />
+
       <SectionNavigationBar sections={MODEL_SECTIONS} />
 
-      {/* TF-IDF Panel (Fade Up) */}
-      <ScrollReveal id="sec-tfidf" variant="fade-up" className="scroll-mt-20">
-        <HudCard tone="cyan" hudTag="Feature Extraction Pipeline">
-          <div className="flex flex-wrap items-start justify-between gap-4">
+      {/* 1. TF-IDF Panel */}
+      <div id="sec-tfidf" className="scroll-mt-20">
+        <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+          <div className="flex flex-wrap items-start justify-between gap-4 pb-4 border-b-2 border-[#202020]/10">
             <div>
-              <h2 className="font-display text-xl font-semibold text-[#F1F5F9]">
-                TF-IDF Vectorizer &amp; Text Preprocessing
-              </h2>
-              <p className="mt-1 text-xs text-[#94A3B8]">
-                Diekstrak langsung dari{" "}
-                <code className="rounded bg-[#080B18] px-1.5 py-0.5 text-[#F1F5F9]">
+              <div className="flex items-center gap-2">
+                <span className="rounded border border-[#202020] bg-[#A78BFA] px-2 py-0.5 text-[10px] font-bold uppercase font-mono text-[#171717]">
+                  Tahap 1
+                </span>
+                <h2 className="font-display text-xl font-bold text-[#171717]">
+                  TF-IDF Vectorizer &amp; Text Preprocessing
+                </h2>
+              </div>
+              <p className="mt-1 text-xs text-[#666666] leading-relaxed">
+                Diekstrak dari notebook penelitian{" "}
+                <code className="break-all rounded border border-[#202020] bg-[#F7F4EC] px-1.5 py-0.5 text-[#171717] font-mono">
                   {metadata.notebookFile}
                 </code>{" "}
-                (fit hanya pada {metadata.dataset.split.trainSize.toLocaleString("id-ID")} data training)
+                (fit hanya pada {metadata.dataset.split.trainSize.toLocaleString("id-ID")} data training).
               </p>
             </div>
-            <span className="font-mono-num rounded-md border border-[#22C55E]/35 bg-[#22C55E]/10 px-2.5 py-1 text-xs text-[#22C55E]">
-              {modelStatus.ready ? "Engine Browser Tervalidasi" : "Memuat Engine..."}
-            </span>
           </div>
 
-          <div className="mt-5 grid grid-cols-1 gap-4 lg:grid-cols-12">
+          <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-12">
+            {/* Parameters Grid */}
             <div className="lg:col-span-7 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {[
                 { label: "Vocabulary Size", val: tfidf.vocabularySize.toLocaleString("id-ID") },
@@ -216,71 +232,65 @@ export default function ModelsPage() {
               ].map((item) => (
                 <div
                   key={item.label}
-                  className="rounded-lg border border-[#263149] bg-[#080B18]/75 p-3"
+                  className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 shadow-[1.5px_1.5px_0px_#202020]"
                 >
-                  <div className="text-[11px] text-[#94A3B8]">{item.label}</div>
-                  <div className="font-mono-num mt-1 text-sm font-semibold text-[#F1F5F9]">
+                  <div className="text-[10px] font-mono font-bold text-[#666666] uppercase">{item.label}</div>
+                  <div className="font-mono-num mt-1 text-sm font-bold text-[#171717]">
                     {item.val}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="lg:col-span-5 rounded-lg border border-[#263149] bg-[#080B18]/75 p-4">
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#22D3EE]">
-                <Sliders className="h-3.5 w-3.5" />
-                Urutan Preprocessing Notebook (Cell 9)
+            {/* Preprocessing Steps */}
+            <div className="lg:col-span-5 rounded-lg border-2 border-[#202020] bg-[#FFFDFC] p-4 shadow-[2px_2px_0px_#202020]">
+              <div className="flex items-center gap-2 text-xs font-bold text-[#171717] pb-2 border-b border-[#202020]/15">
+                <Sliders className="h-4 w-4 text-[#8060D8]" />
+                Urutan Preprocessing Teks (Cell 9)
               </div>
-              <ol className="mt-3 space-y-1.5 text-xs text-[#CBD5E1]">
+              <ol className="mt-3 space-y-1.5 text-xs text-[#171717]">
                 {[
                   "1. Case folding: mengubah seluruh teks menjadi huruf kecil",
-                  "2. Hapus URL (pola http\\S+ dan www\\S+)",
+                  "2. Hapus URL (pola regex http\\S+ dan www\\S+)",
                   "3. Hapus tag HTML (<.*?>)",
-                  "4. Hapus seluruh angka (\\d+)",
-                  "5. Hapus tanda baca & karakter non-alfabet ([^a-z\\s] -> spasi)",
-                  "6. Normalisasi spasi berlebih dan trim",
+                  "4. Hapus seluruh angka numerik (\\d+)",
+                  "5. Hapus tanda baca & non-alfabet ([^a-z\\s] -> spasi)",
+                  "6. Normalisasi spasi berlebih dan pemangkasan (trim)",
                 ].map((step) => (
                   <li key={step} className="flex items-start gap-2">
-                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#22C55E]" />
+                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#228448]" />
                     <span>{step}</span>
                   </li>
                 ))}
               </ol>
-              <p className="mt-3 text-[11px] text-[#94A3B8]">
-                Tidak menggunakan stemming/lemmatization sesuai pipeline asli penelitian.
-              </p>
+              <div className="mt-3 rounded border border-[#202020] bg-[#F7F4EC] p-2 text-[11px] text-[#666666]">
+                <strong>Catatan metodologis:</strong> Tidak menggunakan stemming/lemmatization sesuai pipeline asli penelitian.
+              </div>
             </div>
           </div>
-        </HudCard>
-      </ScrollReveal>
+        </div>
+      </div>
 
-      {/* Naive Bayes & KNN Stagger Reveal */}
-      <StaggerGroup
-        id="sec-classifiers"
-        staggerMs={90}
-        className="grid grid-cols-1 gap-6 scroll-mt-20 lg:grid-cols-2"
-      >
-        <StaggerItem variant="fade-up">
-          <HudCard tone="violet" hudTag="Model 01 — Probabilistic" className="h-full">
-            <div className="flex items-start justify-between gap-3">
+      {/* 2. Naive Bayes & KNN Side-by-Side */}
+      <div id="sec-classifiers" className="scroll-mt-20 space-y-3">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {/* Naive Bayes Card */}
+          <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3.5px_3.5px_0px_#202020]">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b-2 border-[#202020]/10">
               <div>
                 <div className="flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-[#A78BFA]" />
-                  <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-                    {nb.name}
-                  </h2>
+                  <AlgorithmBadge algorithm="naive_bayes" />
+                  <span className="rounded border border-[#202020] bg-[#65C98A] px-2 py-0.5 text-[10px] font-bold text-[#171717]">
+                    Akurasi 80.50%
+                  </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-[#94A3B8]">
-                  Model probabilistik berbasis teorema Bayes dengan asumsi independensi
-                  fitur multinomial pada bobot TF-IDF. Menghasilkan posterior probability
-                  melalui normalisasi log-sum-exp.
+                <p className="mt-2 text-xs text-[#666666] leading-relaxed">
+                  Model probabilistik berbasis teorema Bayes dengan asumsi independensi fitur multinomial pada bobot TF-IDF. Menghitung posterior probability melalui normalisasi log-sum-exp.
                 </p>
               </div>
-              <span className="font-mono-num shrink-0 rounded-md border border-[#8B5CF6]/40 bg-[#8B5CF6]/15 px-2.5 py-1 text-xs font-semibold text-[#C4B5FD]">
-                Acc {(nb.evaluation.accuracy * 100).toFixed(2)}%
-              </span>
             </div>
 
+            {/* Params */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {[
                 { label: "Alpha", val: String(nb.params.alpha) },
@@ -296,52 +306,40 @@ export default function ModelsPage() {
               ].map((p) => (
                 <div
                   key={p.label}
-                  className="rounded-lg border border-[#263149] bg-[#080B18]/75 p-2.5"
+                  className="rounded-lg border border-[#202020] bg-[#F7F4EC] p-2.5"
                 >
-                  <div className="text-[10px] text-[#94A3B8]">{p.label}</div>
-                  <div className="font-mono-num mt-0.5 text-sm font-semibold text-[#F1F5F9]">
+                  <div className="text-[10px] font-mono text-[#666666]">{p.label}</div>
+                  <div className="font-mono-num mt-0.5 text-xs font-bold text-[#171717]">
                     {p.val}
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Metrics */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-              <div className="rounded-lg border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 p-2.5">
-                <div className="text-[10px] text-[#C4B5FD]">Accuracy</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={nb.evaluation.accuracy * 100}
-                    decimals={2}
-                    suffix="%"
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#A78BFA]/20 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Accuracy</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {(nb.evaluation.accuracy * 100).toFixed(2)}%
                 </div>
               </div>
-              <div className="rounded-lg border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 p-2.5">
-                <div className="text-[10px] text-[#C4B5FD]">Precision (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={nb.evaluation.precisionPositive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#A78BFA]/20 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Precision (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {nb.evaluation.precisionPositive.toFixed(4)}
                 </div>
               </div>
-              <div className="rounded-lg border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 p-2.5">
-                <div className="text-[10px] text-[#C4B5FD]">Recall (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={nb.evaluation.recallPositive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#A78BFA]/20 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Recall (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {nb.evaluation.recallPositive.toFixed(4)}
                 </div>
               </div>
-              <div className="rounded-lg border border-[#8B5CF6]/30 bg-[#8B5CF6]/10 p-2.5">
-                <div className="text-[10px] text-[#C4B5FD]">F1-Score (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={nb.evaluation.f1Positive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#A78BFA]/20 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">F1-Score (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {nb.evaluation.f1Positive.toFixed(4)}
                 </div>
               </div>
             </div>
@@ -349,38 +347,32 @@ export default function ModelsPage() {
             <div className="mt-4">
               <ConfusionMatrixGrid
                 title="Confusion Matrix — Naive Bayes"
-                accent="#8B5CF6"
                 evaluation={nb.evaluation}
               />
             </div>
-          </HudCard>
-        </StaggerItem>
+          </div>
 
-        <StaggerItem variant="fade-up">
-          <HudCard tone="cyan" hudTag="Model 02 — Instance-Based" className="h-full">
-            <div className="flex items-start justify-between gap-3">
+          {/* KNN Card */}
+          <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3.5px_3.5px_0px_#202020]">
+            <div className="flex items-start justify-between gap-3 pb-3 border-b-2 border-[#202020]/10">
               <div>
                 <div className="flex items-center gap-2">
-                  <Cpu className="h-5 w-5 text-[#22D3EE]" />
-                  <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-                    {knn.name}
-                  </h2>
+                  <AlgorithmBadge algorithm="knn" />
+                  <span className="rounded border border-[#202020] bg-[#FFFDFC] px-2 py-0.5 text-[10px] font-bold text-[#171717]">
+                    Akurasi 74.12%
+                  </span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-[#94A3B8]">
-                  Algoritma berbasis kedekatan vektor yang mencari 5 tetangga terdekat pada
-                  ruang vektor TF-IDF menggunakan cosine distance. Menghasilkan skor voting
-                  proporsi tetangga (bukan probabilitas terkalibrasi).
+                <p className="mt-2 text-xs text-[#666666] leading-relaxed">
+                  Algoritma berbasis kedekatan vektor yang mencari 5 tetangga terdekat pada ruang vektor TF-IDF menggunakan cosine distance. Menghasilkan skor voting proporsi tetangga (bukan calibrated probability).
                 </p>
               </div>
-              <span className="font-mono-num shrink-0 rounded-md border border-[#22D3EE]/40 bg-[#22D3EE]/12 px-2.5 py-1 text-xs font-semibold text-[#67E8F9]">
-                Acc {(knn.evaluation.accuracy * 100).toFixed(2)}%
-              </span>
             </div>
 
+            {/* Params */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
               {[
                 { label: "Nilai K", val: String(knn.params.nNeighbors) },
-                { label: "Metric", val: knn.params.metric },
+                { label: "Metrik Jarak", val: knn.params.metric },
                 { label: "Weights", val: knn.params.weights },
                 {
                   label: "Train Vectors",
@@ -389,52 +381,40 @@ export default function ModelsPage() {
               ].map((p) => (
                 <div
                   key={p.label}
-                  className="rounded-lg border border-[#263149] bg-[#080B18]/75 p-2.5"
+                  className="rounded-lg border border-[#202020] bg-[#F7F4EC] p-2.5"
                 >
-                  <div className="text-[10px] text-[#94A3B8]">{p.label}</div>
-                  <div className="font-mono-num mt-0.5 text-sm font-semibold text-[#F1F5F9]">
+                  <div className="text-[10px] font-mono text-[#666666]">{p.label}</div>
+                  <div className="font-mono-num mt-0.5 text-xs font-bold text-[#171717]">
                     {p.val}
                   </div>
                 </div>
               ))}
             </div>
 
+            {/* Metrics */}
             <div className="mt-4 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
-              <div className="rounded-lg border border-[#22D3EE]/30 bg-[#22D3EE]/10 p-2.5">
-                <div className="text-[10px] text-[#67E8F9]">Accuracy</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={knn.evaluation.accuracy * 100}
-                    decimals={2}
-                    suffix="%"
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#E8BC55]/25 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Accuracy</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {(knn.evaluation.accuracy * 100).toFixed(2)}%
                 </div>
               </div>
-              <div className="rounded-lg border border-[#22D3EE]/30 bg-[#22D3EE]/10 p-2.5">
-                <div className="text-[10px] text-[#67E8F9]">Precision (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={knn.evaluation.precisionPositive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#E8BC55]/25 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Precision (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {knn.evaluation.precisionPositive.toFixed(4)}
                 </div>
               </div>
-              <div className="rounded-lg border border-[#22D3EE]/30 bg-[#22D3EE]/10 p-2.5">
-                <div className="text-[10px] text-[#67E8F9]">Recall (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={knn.evaluation.recallPositive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#E8BC55]/25 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">Recall (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {knn.evaluation.recallPositive.toFixed(4)}
                 </div>
               </div>
-              <div className="rounded-lg border border-[#22D3EE]/30 bg-[#22D3EE]/10 p-2.5">
-                <div className="text-[10px] text-[#67E8F9]">F1-Score (+)</div>
-                <div className="font-mono-num mt-0.5 text-base font-bold text-[#F1F5F9]">
-                  <CountUpNumber
-                    value={knn.evaluation.f1Positive}
-                    decimals={4}
-                  />
+              <div className="rounded-lg border-2 border-[#202020] bg-[#E8BC55]/25 p-2.5 shadow-[1.5px_1.5px_0px_#202020]">
+                <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">F1-Score (+)</div>
+                <div className="font-mono-num mt-0.5 text-lg font-bold text-[#171717]">
+                  {knn.evaluation.f1Positive.toFixed(4)}
                 </div>
               </div>
             </div>
@@ -442,170 +422,168 @@ export default function ModelsPage() {
             <div className="mt-4">
               <ConfusionMatrixGrid
                 title="Confusion Matrix — KNN"
-                accent="#22D3EE"
                 evaluation={knn.evaluation}
               />
             </div>
-          </HudCard>
-        </StaggerItem>
-      </StaggerGroup>
+          </div>
+        </div>
+      </div>
 
-      {/* Model Comparison (Horizontal Reveal) + Top Terms & Latency */}
-      <div
-        id="sec-comparison"
-        className="grid grid-cols-1 gap-6 scroll-mt-20 lg:grid-cols-12"
-      >
-        <ScrollReveal variant="slide-left" className="lg:col-span-7">
-          <HudCard tone="blue" hudTag="Model Comparison" className="h-full">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-                  Perbandingan Performa NB vs KNN
-                </h2>
-                <p className="text-xs text-[#94A3B8]">
-                  Multinomial Naive Bayes unggul pada Accuracy (80.50% vs 74.10%),
-                  Precision, dan F1-Score
+      {/* 3. Comparison & Browser Latency */}
+      <div id="sec-comparison" className="scroll-mt-20">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Comparison Chart & Table */}
+          <div className="lg:col-span-7">
+            <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+              <div className="pb-3 border-b-2 border-[#202020]/10">
+                <h3 className="font-display text-lg font-bold text-[#171717]">
+                  Perbandingan Komparatif NB vs KNN
+                </h3>
+                <p className="text-xs text-[#666666]">
+                  Multinomial Naive Bayes unggul pada seluruh metrik klasifikasi test set
                 </p>
               </div>
-            </div>
 
-            <div className="mt-3">
-              <ModelComparisonBarChart
-                nb={{
-                  accuracy: nb.evaluation.accuracy,
-                  precision: nb.evaluation.precisionPositive,
-                  recall: nb.evaluation.recallPositive,
-                  f1: nb.evaluation.f1Positive,
-                }}
-                knn={{
-                  accuracy: knn.evaluation.accuracy,
-                  precision: knn.evaluation.precisionPositive,
-                  recall: knn.evaluation.recallPositive,
-                  f1: knn.evaluation.f1Positive,
-                }}
-              />
-            </div>
-
-            <div className="mt-4 overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[#263149] text-[#94A3B8]">
-                    <th className="py-2 pr-4">Algoritma</th>
-                    <th className="py-2 pr-4">Accuracy</th>
-                    <th className="py-2 pr-4">Precision (+)</th>
-                    <th className="py-2 pr-4">Recall (+)</th>
-                    <th className="py-2">F1-Score (+)</th>
-                  </tr>
-                </thead>
-                <tbody className="font-mono-num divide-y divide-[#263149]/60">
-                  <tr>
-                    <td className="py-2.5 pr-4 font-sans font-medium text-[#C4B5FD]">
-                      Multinomial Naive Bayes
-                    </td>
-                    <td className="py-2.5 pr-4 text-[#22C55E]">
-                      {(nb.evaluation.accuracy * 100).toFixed(2)}%
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      {nb.evaluation.precisionPositive.toFixed(4)}
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      {nb.evaluation.recallPositive.toFixed(4)}
-                    </td>
-                    <td className="py-2.5">{nb.evaluation.f1Positive.toFixed(4)}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-2.5 pr-4 font-sans font-medium text-[#67E8F9]">
-                      K-Nearest Neighbors (k=5)
-                    </td>
-                    <td className="py-2.5 pr-4 text-[#22D3EE]">
-                      {(knn.evaluation.accuracy * 100).toFixed(2)}%
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      {knn.evaluation.precisionPositive.toFixed(4)}
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      {knn.evaluation.recallPositive.toFixed(4)}
-                    </td>
-                    <td className="py-2.5">{knn.evaluation.f1Positive.toFixed(4)}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </HudCard>
-        </ScrollReveal>
-
-        <div className="lg:col-span-5 space-y-6">
-          <ScrollReveal variant="slide-right">
-            <HudCard tone="default" hudTag="Live Browser Latency">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <Gauge className="h-4 w-4 text-[#22D3EE]" />
-                  <h3 className="font-display text-base font-semibold text-[#F1F5F9]">
-                    Pengukuran Waktu Inferensi
-                  </h3>
-                </div>
-                <button
-                  type="button"
-                  disabled={benchmarkRunning}
-                  onClick={() => void runLiveLatencyBenchmark()}
-                  className="inline-flex items-center gap-1.5 rounded-lg border border-[#8B5CF6]/45 bg-[#8B5CF6]/18 px-3 py-1.5 text-xs font-medium text-[#F1F5F9] transition hover:bg-[#8B5CF6]/30 disabled:opacity-50"
-                >
-                  <Play className="h-3.5 w-3.5" />
-                  {benchmarkRunning ? "Mengukur..." : "Uji 5 Ulasan"}
-                </button>
-              </div>
-              <p className="mt-1.5 text-xs text-[#94A3B8]">
-                Mengukur waktu eksekusi Web Worker aktual di browser Anda (bukan angka statis).
-              </p>
-              {benchmarkError && (
-                <p className="mt-2 text-xs text-[#F43F5E]">{benchmarkError}</p>
-              )}
-              {benchmarkResult ? (
-                <div className="mt-3 grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-[#8B5CF6]/30 bg-[#080B18]/80 p-3">
-                    <div className="text-[11px] text-[#94A3B8]">
-                      Naive Bayes ({benchmarkResult.sampleCount} ulasan)
-                    </div>
-                    <div className="font-mono-num mt-1 text-lg font-bold text-[#C4B5FD]">
-                      {benchmarkResult.nbMs.toFixed(2)} ms
-                    </div>
-                  </div>
-                  <div className="rounded-lg border border-[#22D3EE]/30 bg-[#080B18]/80 p-3">
-                    <div className="text-[11px] text-[#94A3B8]">
-                      KNN Brute Cosine ({benchmarkResult.sampleCount} ulasan)
-                    </div>
-                    <div className="font-mono-num mt-1 text-lg font-bold text-[#67E8F9]">
-                      {benchmarkResult.knnMs.toFixed(2)} ms
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="mt-3 rounded-lg border border-dashed border-[#263149] bg-[#080B18]/50 p-3 text-xs text-[#94A3B8]">
-                  Status: Belum diukur. Klik <strong>Uji 5 Ulasan</strong> untuk mengukur latensi aktual Web Worker.
-                </div>
-              )}
-            </HudCard>
-          </ScrollReveal>
-
-          <ScrollReveal variant="fade-scale" delay={0.08}>
-            <HudCard tone="default" hudTag="Top TF-IDF Terms (Train)">
-              <div className="flex items-center gap-2">
-                <Layers className="h-4 w-4 text-[#22C55E]" />
-                <h3 className="font-display text-base font-semibold text-[#F1F5F9]">
-                  Top 10 Term TF-IDF — Kelas Positif
-                </h3>
-              </div>
-              <p className="mt-1 text-xs text-[#94A3B8]">
-                Rata-rata bobot TF-IDF tertinggi pada data training positif
-              </p>
-              <div className="mt-2">
-                <TopTermsBarChart
-                  terms={metadata.dataset.topTerms.positive}
-                  color="#22C55E"
+              <div className="mt-4">
+                <ModelComparisonBarChart
+                  nb={{
+                    accuracy: nb.evaluation.accuracy,
+                    precision: nb.evaluation.precisionPositive,
+                    recall: nb.evaluation.recallPositive,
+                    f1: nb.evaluation.f1Positive,
+                  }}
+                  knn={{
+                    accuracy: knn.evaluation.accuracy,
+                    precision: knn.evaluation.precisionPositive,
+                    recall: knn.evaluation.recallPositive,
+                    f1: knn.evaluation.f1Positive,
+                  }}
                 />
               </div>
-            </HudCard>
-          </ScrollReveal>
+
+              <div className="mt-4 overflow-x-auto rounded-lg border-2 border-[#202020]">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b-2 border-[#202020] bg-[#F7F4EC] text-[#171717] font-bold font-mono">
+                      <th className="py-2.5 px-3">Algoritma</th>
+                      <th className="py-2.5 px-3">Accuracy</th>
+                      <th className="py-2.5 px-3">Precision (+)</th>
+                      <th className="py-2.5 px-3">Recall (+)</th>
+                      <th className="py-2.5 px-3">F1-Score (+)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="font-mono-num divide-y border-[#202020]/20 bg-[#FFFDFC]">
+                    <tr>
+                      <td className="py-2.5 px-3 font-sans font-bold text-[#8060D8]">
+                        Multinomial Naive Bayes
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-[#228448]">
+                        {(nb.evaluation.accuracy * 100).toFixed(2)}%
+                      </td>
+                      <td className="py-2.5 px-3">{nb.evaluation.precisionPositive.toFixed(4)}</td>
+                      <td className="py-2.5 px-3">{nb.evaluation.recallPositive.toFixed(4)}</td>
+                      <td className="py-2.5 px-3 font-bold">{nb.evaluation.f1Positive.toFixed(4)}</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2.5 px-3 font-sans font-bold text-[#C89B2B]">
+                        K-Nearest Neighbors (k=5)
+                      </td>
+                      <td className="py-2.5 px-3 font-bold text-[#171717]">
+                        {(knn.evaluation.accuracy * 100).toFixed(2)}%
+                      </td>
+                      <td className="py-2.5 px-3">{knn.evaluation.precisionPositive.toFixed(4)}</td>
+                      <td className="py-2.5 px-3">{knn.evaluation.recallPositive.toFixed(4)}</td>
+                      <td className="py-2.5 px-3 font-bold">{knn.evaluation.f1Positive.toFixed(4)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          {/* Latency Benchmark & Top Terms */}
+          <div className="lg:col-span-5 space-y-5">
+            {/* Live Latency Card */}
+            <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+              <div className="flex items-center justify-between gap-2 pb-3 border-b-2 border-[#202020]/10">
+                <div className="flex items-center gap-2">
+                  <Gauge className="h-4 w-4 text-[#8060D8]" />
+                  <h3 className="font-display text-base font-bold text-[#171717]">
+                    Uji Kecepatan Inferensi Nyata
+                  </h3>
+                </div>
+                <PrimaryButton
+                  size="sm"
+                  disabled={benchmarkRunning}
+                  onClick={() => void runLiveLatencyBenchmark()}
+                  isLoading={benchmarkRunning}
+                  icon={<Play className="h-3.5 w-3.5" />}
+                >
+                  Uji 5 Teks
+                </PrimaryButton>
+              </div>
+
+              <p className="mt-2 text-xs text-[#666666]">
+                Mengukur durasi inferensi Web Worker langsung di CPU browser Anda saat ini.
+              </p>
+
+              {benchmarkError && (
+                <MangaShake shakeKey={benchmarkError}>
+                  <p className="mt-2 text-xs text-[#BA2A2A] font-bold">{benchmarkError}</p>
+                </MangaShake>
+              )}
+
+              {benchmarkResult ? (
+                <ComicPanelReveal direction="pop" className="mt-3 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <ComicPopCallout text="BENCHMARKED!" tone="positive" tilt={-2} />
+                    <span className="font-mono text-[10px] text-[#666666]">Web Worker Live</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="rounded-lg border-2 border-[#202020] bg-[#A78BFA]/20 p-3 shadow-[1.5px_1.5px_0px_#202020]">
+                      <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">
+                        Naive Bayes ({benchmarkResult.sampleCount} ulasan)
+                      </div>
+                      <div className="font-mono-num mt-1 text-lg font-bold text-[#171717]">
+                        {benchmarkResult.nbMs.toFixed(2)} ms
+                      </div>
+                    </div>
+                    <div className="rounded-lg border-2 border-[#202020] bg-[#E8BC55]/25 p-3 shadow-[1.5px_1.5px_0px_#202020]">
+                      <div className="text-[10px] font-mono font-bold text-[#171717] uppercase">
+                        KNN Cosine ({benchmarkResult.sampleCount} ulasan)
+                      </div>
+                      <div className="font-mono-num mt-1 text-lg font-bold text-[#171717]">
+                        {benchmarkResult.knnMs.toFixed(2)} ms
+                      </div>
+                    </div>
+                  </div>
+                </ComicPanelReveal>
+              ) : (
+                <div className="mt-3 rounded-lg border-2 border-dashed border-[#202020]/40 bg-[#F7F4EC] p-3 text-xs text-[#666666]">
+                  Klik <strong>Uji 5 Teks</strong> untuk menjalankan simulasi inferensi real-time di browser.
+                </div>
+              )}
+            </div>
+
+            {/* Top Terms Card */}
+            <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+              <div className="flex items-center gap-2 pb-3 border-b-2 border-[#202020]/10">
+                <Layers className="h-4 w-4 text-[#228448]" />
+                <h3 className="font-display text-base font-bold text-[#171717]">
+                  Top Term TF-IDF — Sentimen Positif
+                </h3>
+              </div>
+              <p className="mt-1 text-xs text-[#666666]">
+                Bobot kata rata-rata tertinggi pada korpus pelatihan berlabel positif
+              </p>
+              <div className="mt-3">
+                <TopTermsBarChart
+                  terms={metadata.dataset.topTerms.positive}
+                  accent="#65C98A"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

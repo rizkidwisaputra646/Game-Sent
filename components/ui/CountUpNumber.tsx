@@ -6,6 +6,7 @@ import { useInView, useReducedMotion } from "motion/react";
 interface CountUpNumberProps {
   value: number;
   decimals?: number;
+  prefix?: string;
   suffix?: string;
   durationMs?: number;
   className?: string;
@@ -14,6 +15,7 @@ interface CountUpNumberProps {
 export function CountUpNumber({
   value,
   decimals = 0,
+  prefix = "",
   suffix = "",
   durationMs = 950,
   className = "",
@@ -55,6 +57,7 @@ export function CountUpNumber({
 
   return (
     <span ref={ref} className={`font-mono-num ${className}`}>
+      {prefix}
       {formatted}
       {suffix}
     </span>

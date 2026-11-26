@@ -2,15 +2,25 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { Info, Scale, ShieldAlert } from "lucide-react";
 import {
-  ScrollReveal,
   SectionNavigationBar,
   type SectionAnchor,
 } from "@/components/motion/ScrollPrimitives";
+import {
+  ComicPanelReveal,
+  ComicPopCallout,
+  ImpactBurst,
+  MangaSpeedLines,
+} from "@/components/motion/AnimeComicMotion";
 import { useGameSent } from "@/components/providers/GameSentProvider";
 import { CountUpNumber } from "@/components/ui/CountUpNumber";
-import { HudCard } from "@/components/ui/HudCard";
+import { PageHeader } from "@/components/ui/PageHeader";
+import {
+  DotaArtworkBadge,
+  MLBBArtworkBadge,
+} from "@/components/ui/AnimeDecoration";
 
 const GameSentimentBarChart = dynamic(
   () =>
@@ -20,7 +30,7 @@ const GameSentimentBarChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[270px] animate-pulse rounded-lg bg-[#0D1224]" />
+      <div className="h-[270px] animate-pulse rounded-xl border-2 border-[#202020] bg-[#FFFDFC]" />
     ),
   }
 );
@@ -33,7 +43,7 @@ const SentimentDonutChart = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="h-[260px] animate-pulse rounded-lg bg-[#0D1224]" />
+      <div className="h-[220px] animate-pulse rounded-xl border-2 border-[#202020] bg-[#FFFDFC]" />
     ),
   }
 );
@@ -72,171 +82,222 @@ export default function ComparisonPage() {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Game Comparison"
+        tag="KOMPARASI MOBA"
+        description="Analisis komparatif sebaran sentimen ulasan pemain antara Dota 2 (Steam) dan Mobile Legends: Bang Bang (Google Play Store) dengan konteks metodologis penelitian."
+      />
+
       <SectionNavigationBar sections={COMPARISON_SECTIONS} />
 
-      {/* Side-by-Side Game Overview Cards (Slide Left & Slide Right) */}
+      {/* 1. Side-by-Side Game Profile Cards — Uncropped Artwork + Crisp High-Contrast Header Strip */}
       <div
         id="sec-games"
         className="grid grid-cols-1 gap-6 scroll-mt-20 lg:grid-cols-2"
       >
-        <ScrollReveal variant="slide-left">
-          <HudCard tone="blue" hudTag="Game A — Mobile MOBA" className="h-full">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl font-bold text-[#F1F5F9]">
-                  Mobile Legends: Bang Bang
-                </h2>
-                <p className="mt-1 text-xs text-[#94A3B8]">
-                  Sumber label dataset:{" "}
-                  <code className="rounded bg-[#080B18] px-1.5 py-0.5 text-[#93C5FD]">
-                    model ({ml.labelSources.model?.toLocaleString("id-ID") ?? ml.total} baris)
-                  </code>
-                </p>
+        {/* Mobile Legends Card (Blue + Gold Energy Reveal from Left) */}
+        <ComicPanelReveal direction="left">
+          <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] shadow-[3.5px_3.5px_0px_#202020] overflow-hidden">
+            {/* Full Uncropped Artwork Showcase */}
+            <div className="relative h-56 sm:h-64 w-full border-b-2 border-[#202020] bg-[#0F172A] overflow-hidden">
+              <Image
+                src="/images/mlbb-art.jpg"
+                alt="Mobile Legends: Bang Bang Reference Artwork"
+                fill
+                className="object-cover object-[center_18%]"
+              />
+              <div className="absolute top-3 right-3 z-10">
+                <ComicPopCallout text="MOBILE MOBA" tone="mlbb" tilt={2} />
               </div>
-              <div className="text-right">
-                <div className="text-[11px] text-[#94A3B8]">Total Ulasan</div>
-                <div className="text-2xl font-bold text-[#F1F5F9]">
+            </div>
+
+            {/* Crisp Solid Blue-Gold Title Strip (Zero Contrast Overlap!) */}
+            <div className="relative overflow-hidden flex items-center justify-between gap-3 border-b-2 border-[#202020] bg-[#3479D4] px-4 py-3.5 text-white">
+              <ImpactBurst
+                color="#E8BC55"
+                className="absolute -right-6 -bottom-6 w-24 h-24 opacity-25"
+              />
+              <div className="relative z-10 flex items-center gap-3 min-w-0">
+                <MLBBArtworkBadge />
+                <div className="min-w-0">
+                  <h2 className="font-display text-lg sm:text-xl font-extrabold tracking-tight text-white truncate">
+                    Mobile Legends: Bang Bang
+                  </h2>
+                  <p className="text-xs text-white/90 mt-0.5 truncate">
+                    Sumber: Google Play Store (label_source: model)
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-10 text-right shrink-0">
+                <span className="block text-[10px] font-mono font-bold text-[#E8BC55] uppercase">
+                  Total Ulasan
+                </span>
+                <span className="font-display text-2xl font-extrabold text-white">
                   <CountUpNumber value={ml.total} />
-                </div>
+                </span>
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-lg border border-[#22C55E]/30 bg-[#22C55E]/10 p-3">
-                <div className="text-[11px] text-[#86EFAC]">Positif</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#22C55E]">
-                  <CountUpNumber value={ml.positive} />
+            {/* Stats Breakdown */}
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="rounded-lg border-2 border-[#202020] bg-[#65C98A]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#228448] uppercase">Positif</span>
+                  <span className="font-display text-xl font-bold text-[#228448]">
+                    <CountUpNumber value={ml.positive} />
+                  </span>
+                  <span className="block text-xs font-bold text-[#228448] mt-0.5">{ml.positivePct}%</span>
                 </div>
-                <div className="font-mono-num text-[11px] text-[#86EFAC]">
-                  {ml.positivePct}%
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#FA7777]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#BA2A2A] uppercase">Negatif</span>
+                  <span className="font-display text-xl font-bold text-[#BA2A2A]">
+                    <CountUpNumber value={ml.negative} />
+                  </span>
+                  <span className="block text-xs font-bold text-[#BA2A2A] mt-0.5">{ml.negativePct}%</span>
+                </div>
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#666666] uppercase">Rata-rata Kata</span>
+                  <span className="font-display text-xl font-bold text-[#171717]">
+                    <CountUpNumber value={ml.avgWordCount} decimals={1} />
+                  </span>
+                  <span className="block text-[11px] text-[#666666] mt-0.5">kata / ulasan</span>
+                </div>
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#666666] uppercase">Rata-rata Karakter</span>
+                  <span className="font-display text-xl font-bold text-[#171717]">
+                    <CountUpNumber value={ml.avgCharLength} decimals={1} />
+                  </span>
+                  <span className="block text-[11px] text-[#666666] mt-0.5">karakter</span>
                 </div>
               </div>
-              <div className="rounded-lg border border-[#F43F5E]/30 bg-[#F43F5E]/10 p-3">
-                <div className="text-[11px] text-[#FDA4AF]">Negatif</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F43F5E]">
-                  <CountUpNumber value={ml.negative} />
-                </div>
-                <div className="font-mono-num text-[11px] text-[#FDA4AF]">
-                  {ml.negativePct}%
-                </div>
-              </div>
-              <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3">
-                <div className="text-[11px] text-[#94A3B8]">Rata-rata Kata</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F1F5F9]">
-                  <CountUpNumber value={ml.avgWordCount} decimals={1} />
-                </div>
-                <div className="text-[10px] text-[#64748B]">kata / ulasan</div>
-              </div>
-              <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3">
-                <div className="text-[11px] text-[#94A3B8]">Rata-rata Karakter</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F1F5F9]">
-                  <CountUpNumber value={ml.avgCharLength} decimals={1} />
-                </div>
-                <div className="text-[10px] text-[#64748B]">karakter</div>
+
+              <div className="rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-3">
+                <SentimentDonutChart
+                  positive={ml.positive}
+                  negative={ml.negative}
+                  totalLabel="Mobile Legends"
+                />
               </div>
             </div>
+          </div>
+        </ComicPanelReveal>
 
-            <ScrollReveal variant="clip-reveal" className="mt-4">
-              <SentimentDonutChart
-                positive={ml.positive}
-                negative={ml.negative}
-                totalLabel="Mobile Legends"
+        {/* Dota 2 Card (Crimson Impact Reveal from Right) */}
+        <ComicPanelReveal direction="right" delay={0.08}>
+          <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] shadow-[3.5px_3.5px_0px_#202020] overflow-hidden">
+            {/* Full Uncropped Artwork Showcase */}
+            <div className="relative h-56 sm:h-64 w-full border-b-2 border-[#202020] bg-[#171717] overflow-hidden">
+              <Image
+                src="/images/dota-art.jpg"
+                alt="Dota 2 Reference Artwork"
+                fill
+                className="object-cover object-[center_20%]"
               />
-            </ScrollReveal>
-          </HudCard>
-        </ScrollReveal>
-
-        <ScrollReveal variant="slide-right">
-          <HudCard tone="cyan" hudTag="Game B — PC MOBA (Steam)" className="h-full">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl font-bold text-[#F1F5F9]">
-                  Dota 2
-                </h2>
-                <p className="mt-1 text-xs text-[#94A3B8]">
-                  Sumber label dataset:{" "}
-                  <code className="rounded bg-[#080B18] px-1.5 py-0.5 text-[#67E8F9]">
-                    voted_up Steam (
-                    {dota.labelSources["voted_up Steam"]?.toLocaleString("id-ID") ??
-                      dota.total}{" "}
-                    baris)
-                  </code>
-                </p>
+              <div className="absolute top-3 right-3 z-10">
+                <ComicPopCallout text="PC MOBA (STEAM)" tone="dota" tilt={-2} />
               </div>
-              <div className="text-right">
-                <div className="text-[11px] text-[#94A3B8]">Total Ulasan</div>
-                <div className="text-2xl font-bold text-[#F1F5F9]">
+            </div>
+
+            {/* Crisp Solid Crimson Title Strip */}
+            <div className="relative overflow-hidden flex items-center justify-between gap-3 border-b-2 border-[#202020] bg-[#D94B43] px-4 py-3.5 text-white">
+              <MangaSpeedLines
+                color="#FFFFFF"
+                className="absolute inset-0 h-full w-full opacity-35"
+              />
+              <div className="relative z-10 flex items-center gap-3 min-w-0">
+                <DotaArtworkBadge />
+                <div className="min-w-0">
+                  <h2 className="font-display text-lg sm:text-xl font-extrabold tracking-tight text-white truncate">
+                    Dota 2
+                  </h2>
+                  <p className="text-xs text-white/90 mt-0.5 truncate">
+                    Sumber: Steam Community (voted_up Steam)
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative z-10 text-right shrink-0">
+                <span className="block text-[10px] font-mono font-bold text-[#FFFDFC]/90 uppercase">
+                  Total Ulasan
+                </span>
+                <span className="font-display text-2xl font-extrabold text-white">
                   <CountUpNumber value={dota.total} />
-                </div>
+                </span>
               </div>
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-lg border border-[#22C55E]/30 bg-[#22C55E]/10 p-3">
-                <div className="text-[11px] text-[#86EFAC]">Positif</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#22C55E]">
-                  <CountUpNumber value={dota.positive} />
+            {/* Stats Breakdown */}
+            <div className="p-5 space-y-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="rounded-lg border-2 border-[#202020] bg-[#65C98A]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#228448] uppercase">Positif</span>
+                  <span className="font-display text-xl font-bold text-[#228448]">
+                    <CountUpNumber value={dota.positive} />
+                  </span>
+                  <span className="block text-xs font-bold text-[#228448] mt-0.5">{dota.positivePct}%</span>
                 </div>
-                <div className="font-mono-num text-[11px] text-[#86EFAC]">
-                  {dota.positivePct}%
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#FA7777]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#BA2A2A] uppercase">Negatif</span>
+                  <span className="font-display text-xl font-bold text-[#BA2A2A]">
+                    <CountUpNumber value={dota.negative} />
+                  </span>
+                  <span className="block text-xs font-bold text-[#BA2A2A] mt-0.5">{dota.negativePct}%</span>
+                </div>
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#666666] uppercase">Rata-rata Kata</span>
+                  <span className="font-display text-xl font-bold text-[#171717]">
+                    <CountUpNumber value={dota.avgWordCount} decimals={1} />
+                  </span>
+                  <span className="block text-[11px] text-[#666666] mt-0.5">kata / ulasan</span>
+                </div>
+
+                <div className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+                  <span className="block text-[10px] font-mono font-bold text-[#666666] uppercase">Rata-rata Karakter</span>
+                  <span className="font-display text-xl font-bold text-[#171717]">
+                    <CountUpNumber value={dota.avgCharLength} decimals={1} />
+                  </span>
+                  <span className="block text-[11px] text-[#666666] mt-0.5">karakter</span>
                 </div>
               </div>
-              <div className="rounded-lg border border-[#F43F5E]/30 bg-[#F43F5E]/10 p-3">
-                <div className="text-[11px] text-[#FDA4AF]">Negatif</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F43F5E]">
-                  <CountUpNumber value={dota.negative} />
-                </div>
-                <div className="font-mono-num text-[11px] text-[#FDA4AF]">
-                  {dota.negativePct}%
-                </div>
-              </div>
-              <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3">
-                <div className="text-[11px] text-[#94A3B8]">Rata-rata Kata</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F1F5F9]">
-                  <CountUpNumber value={dota.avgWordCount} decimals={1} />
-                </div>
-                <div className="text-[10px] text-[#64748B]">kata / ulasan</div>
-              </div>
-              <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3">
-                <div className="text-[11px] text-[#94A3B8]">Rata-rata Karakter</div>
-                <div className="font-mono-num mt-1 text-lg font-bold text-[#F1F5F9]">
-                  <CountUpNumber value={dota.avgCharLength} decimals={1} />
-                </div>
-                <div className="text-[10px] text-[#64748B]">karakter</div>
+
+              <div className="rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-3">
+                <SentimentDonutChart
+                  positive={dota.positive}
+                  negative={dota.negative}
+                  totalLabel="Dota 2"
+                />
               </div>
             </div>
-
-            <ScrollReveal variant="clip-reveal" className="mt-4">
-              <SentimentDonutChart
-                positive={dota.positive}
-                negative={dota.negative}
-                totalLabel="Dota 2"
-              />
-            </ScrollReveal>
-          </HudCard>
-        </ScrollReveal>
+          </div>
+        </ComicPanelReveal>
       </div>
 
-      {/* Grouped Comparison Bar Chart (Fade & Scale Reveal) */}
-      <ScrollReveal id="sec-chart" variant="fade-scale" className="scroll-mt-20">
-        <HudCard tone="violet" hudTag="Comparative Distribution">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* 2. Grouped Comparison Bar Chart */}
+      <ComicPanelReveal id="sec-chart" direction="up" className="scroll-mt-20">
+        <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b-2 border-[#202020]/10">
             <div>
-              <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-                Grafik Perbandingan Sentimen Mobile Legends vs Dota 2
-              </h2>
-              <p className="text-xs text-[#94A3B8]">
-                Beralih antara jumlah absolut dan persentase distribusi sentimen
+              <h3 className="font-display text-lg font-bold text-[#171717]">
+                Grafik Komparasi Sentimen MOBA
+              </h3>
+              <p className="text-xs text-[#666666]">
+                Beralih antara jumlah absolut (ulasan) dan persentase (%)
               </p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={() => setChartMode("count")}
-                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                className={`rounded-xl border-2 border-[#202020] px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   chartMode === "count"
-                    ? "border-[#8B5CF6] bg-[#8B5CF6]/20 text-[#F1F5F9]"
-                    : "border-[#263149] bg-[#080B18] text-[#94A3B8]"
+                    ? "bg-[#A78BFA] text-[#171717] shadow-[2px_2px_0px_#202020]"
+                    : "bg-[#FFFDFC] text-[#666666] hover:bg-[#F7F4EC]"
                 }`}
               >
                 Jumlah Ulasan
@@ -244,10 +305,10 @@ export default function ComparisonPage() {
               <button
                 type="button"
                 onClick={() => setChartMode("percentage")}
-                className={`rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+                className={`rounded-xl border-2 border-[#202020] px-3.5 py-1.5 text-xs font-bold transition-all cursor-pointer ${
                   chartMode === "percentage"
-                    ? "border-[#22D3EE] bg-[#22D3EE]/18 text-[#F1F5F9]"
-                    : "border-[#263149] bg-[#080B18] text-[#94A3B8]"
+                    ? "bg-[#A78BFA] text-[#171717] shadow-[2px_2px_0px_#202020]"
+                    : "bg-[#FFFDFC] text-[#666666] hover:bg-[#F7F4EC]"
                 }`}
               >
                 Persentase (%)
@@ -258,87 +319,62 @@ export default function ComparisonPage() {
           <div className="mt-4">
             <GameSentimentBarChart data={barData} mode={chartMode} />
           </div>
-        </HudCard>
-      </ScrollReveal>
+        </div>
+      </ComicPanelReveal>
 
-      {/* Scientific & Objective Interpretation (Fade Up) */}
-      <ScrollReveal id="sec-interpretation" variant="fade-up" className="scroll-mt-20">
-        <HudCard tone="default" hudTag="Data-Driven Interpretation">
-          <div className="flex items-start gap-3">
-            <div className="rounded-lg border border-[#3B82F6]/35 bg-[#3B82F6]/12 p-2.5 text-[#60A5FA]">
-              <Scale className="h-5 w-5" />
+      {/* 3. Methodological Context & Caution */}
+      <ComicPanelReveal id="sec-interpretation" direction="up" className="scroll-mt-20">
+        <div className="rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3px_3px_0px_#202020]">
+          <div className="flex items-start gap-3 pb-3 border-b-2 border-[#202020]/10">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border-2 border-[#202020] bg-[#A78BFA] shadow-[2px_2px_0px_#202020]">
+              <Scale className="h-5 w-5 text-[#171717]" />
             </div>
-            <div className="space-y-3">
-              <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-                Interpretasi Statistik Penelitian
-              </h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 text-xs leading-relaxed text-[#CBD5E1]">
-                <div className="rounded-lg border border-[#263149] bg-[#080B18]/75 p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-semibold text-[#F1F5F9]">
-                    <Info className="h-4 w-4 text-[#22D3EE]" />
-                    Temuan Distribusi Aktual
-                  </div>
-                  <p>
-                    Pada dataset penelitian sebanyak{" "}
-                    <strong className="font-mono-num text-[#F1F5F9]">
-                      {metadata.dataset.totalReviews.toLocaleString("id-ID")}
-                    </strong>{" "}
-                    ulasan yang hampir seimbang secara jumlah (Mobile Legends:{" "}
-                    <strong className="font-mono-num">{ml.total}</strong>; Dota 2:{" "}
-                    <strong className="font-mono-num">{dota.total}</strong>), proporsi
-                    sentimen positif pada Dota 2 tercatat sebesar{" "}
-                    <strong className="font-mono-num text-[#22C55E]">
-                      {dota.positivePct}%
-                    </strong>{" "}
-                    sedangkan Mobile Legends sebesar{" "}
-                    <strong className="font-mono-num text-[#22C55E]">
-                      {ml.positivePct}%
-                    </strong>{" "}
-                    (selisih <strong className="font-mono-num">{posGap} poin persen</strong>).
-                  </p>
-                  <p>
-                    Sebaliknya, sentimen negatif mendominasi sampel Mobile Legends sebesar{" "}
-                    <strong className="font-mono-num text-[#F43F5E]">
-                      {ml.negativePct}%
-                    </strong>{" "}
-                    ({ml.negative.toLocaleString("id-ID")} ulasan) dibandingkan Dota 2
-                    sebesar{" "}
-                    <strong className="font-mono-num text-[#F43F5E]">
-                      {dota.negativePct}%
-                    </strong>{" "}
-                    ({dota.negative.toLocaleString("id-ID")} ulasan).
-                  </p>
-                </div>
-
-                <div className="rounded-lg border border-[#F59E0B]/30 bg-[#F59E0B]/6 p-4 space-y-2">
-                  <div className="flex items-center gap-2 font-semibold text-[#FDE68A]">
-                    <ShieldAlert className="h-4 w-4 text-[#F59E0B]" />
-                    Batasan &amp; Kehati-hatian Interpretasi
-                  </div>
-                  <p>
-                    Persentase sentimen positif yang lebih tinggi pada satu game{" "}
-                    <strong>
-                      tidak boleh disimpulkan bahwa satu game lebih baik secara objektif
-                    </strong>{" "}
-                    dibandingkan game lainnya.
-                  </p>
-                  <p>
-                    Hasil distribusi sangat dipengaruhi oleh komposisi dataset, perbedaan
-                    sumber ulasan &amp; metode pelabelan (kolom{" "}
-                    <code className="rounded bg-[#080B18] px-1 text-[#F1F5F9]">
-                      label_source
-                    </code>
-                    : Dota 2 berasal dari <code className="text-[#67E8F9]">voted_up Steam</code>{" "}
-                    sedangkan Mobile Legends berlabel{" "}
-                    <code className="text-[#93C5FD]">model</code>), periode pengumpulan data,
-                    serta karakteristik demografi/platform pengguna yang menulis ulasan.
-                  </p>
-                </div>
-              </div>
+            <div>
+              <h3 className="font-display text-lg font-bold text-[#171717]">
+                Konteks Metodologis &amp; Batasan Analisis
+              </h3>
+              <p className="text-xs text-[#666666]">
+                Pedoman interpretasi perbandingan sentimen antar-platform
+              </p>
             </div>
           </div>
-        </HudCard>
-      </ScrollReveal>
+
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-4 space-y-2.5">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#171717]">
+                <Info className="h-4 w-4 text-[#8060D8]" />
+                Temuan Sebaran Data Aktual
+              </div>
+              <p className="text-xs text-[#171717] leading-relaxed">
+                Pada dataset penelitian sebanyak{" "}
+                <strong>{metadata.dataset.totalReviews.toLocaleString("id-ID")}</strong> ulasan
+                (Mobile Legends: <strong>{ml.total}</strong>; Dota 2: <strong>{dota.total}</strong>), proporsi sentimen positif Dota 2 tercatat sebesar{" "}
+                <strong className="text-[#228448]">{dota.positivePct}%</strong> sedangkan Mobile Legends sebesar{" "}
+                <strong className="text-[#228448]">{ml.positivePct}%</strong> (selisih {posGap} poin persen).
+              </p>
+              <p className="text-xs text-[#171717] leading-relaxed">
+                Sentimen negatif mendominasi ulasan Mobile Legends sebesar{" "}
+                <strong className="text-[#BA2A2A]">{ml.negativePct}%</strong> ({ml.negative.toLocaleString("id-ID")} ulasan) dibandingkan Dota 2 sebesar{" "}
+                <strong className="text-[#BA2A2A]">{dota.negativePct}%</strong> ({dota.negative.toLocaleString("id-ID")} ulasan).
+              </p>
+            </div>
+
+            <div className="rounded-xl border-2 border-[#202020] bg-[#F5C85B]/25 p-4 space-y-2.5">
+              <div className="flex items-center gap-2 font-bold text-sm text-[#171717]">
+                <ShieldAlert className="h-4 w-4 text-[#C89B2B]" />
+                Kehati-hatian Pengambilan Kesimpulan
+              </div>
+              <p className="text-xs text-[#171717] leading-relaxed">
+                Persentase sentimen positif yang lebih tinggi pada Dota 2{" "}
+                <strong>TIDAK otomatis menandakan bahwa Dota 2 merupakan game yang lebih baik secara objektif</strong>.
+              </p>
+              <p className="text-xs text-[#171717] leading-relaxed">
+                Hasil ini merefleksikan perbedaan ekosistem: Dota 2 dikumpulkan dari platform PC (Steam) di mana ulasan sering kali berupa evaluasi berbobot dari pemain jangka panjang, sedangkan Mobile Legends dikumpulkan dari Google Play Store di mana ulasan mobile rentan dipicu keluhan koneksi, update aplikasi, atau frustrasi sistem gacha/skin.
+              </p>
+            </div>
+          </div>
+        </div>
+      </ComicPanelReveal>
     </div>
   );
 }

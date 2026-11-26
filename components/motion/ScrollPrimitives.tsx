@@ -283,10 +283,10 @@ export function SectionNavigationBar({
   return (
     <nav
       aria-label="Navigasi section halaman"
-      className="flex flex-wrap items-center gap-1.5 rounded-xl border border-[#263149] bg-[#0D1224]/85 px-3 py-2 backdrop-blur-md"
+      className="flex flex-wrap items-center gap-1.5 rounded-xl border-2 border-[#202020] bg-[#FFFDFC] px-3.5 py-2 shadow-[2.5px_2.5px_0px_#202020]"
     >
-      <span className="mr-1 hidden sm:inline font-mono-num text-[10px] font-semibold tracking-[0.16em] text-[#64748B] uppercase">
-        Sections:
+      <span className="mr-1 hidden sm:inline font-mono-num text-[10px] font-bold tracking-[0.16em] text-[#666666] uppercase">
+        Seksi Halaman:
       </span>
       {sections.map((sec) => {
         const active = activeId === sec.id;
@@ -295,21 +295,21 @@ export function SectionNavigationBar({
             key={sec.id}
             type="button"
             onClick={() => scrollToSection(sec.id)}
-            className={`relative rounded-lg px-2.5 py-1 text-xs font-medium transition-colors duration-200 ${
+            className={`relative rounded-lg px-2.5 py-1 text-xs font-bold transition-all duration-150 cursor-pointer ${
               active
-                ? "text-[#F1F5F9]"
-                : "text-[#94A3B8] hover:text-[#F1F5F9]"
+                ? "text-[#171717]"
+                : "text-[#666666] hover:text-[#171717] hover:bg-[#F7F4EC]"
             }`}
           >
             {active && (
               <motion.span
                 layoutId="section-spy-pill"
-                transition={{ duration: shouldReduceMotion ? 0 : 0.24, ease: EASE_HUD }}
-                className="absolute inset-0 rounded-lg border border-[#22D3EE]/45 bg-[#22D3EE]/12"
+                transition={{ duration: shouldReduceMotion ? 0 : 0.2, ease: EASE_HUD }}
+                className="absolute inset-0 rounded-lg border-2 border-[#202020] bg-[#A78BFA] shadow-[1.5px_1.5px_0px_#202020]"
               />
             )}
             <span className="relative z-10 flex items-center gap-1.5">
-              <span className="font-mono-num text-[10px] text-[#22D3EE]">
+              <span className={`font-mono-num text-[10px] ${active ? "text-[#171717]" : "text-[#8060D8]"}`}>
                 {sec.code}
               </span>
               <span>{sec.label}</span>

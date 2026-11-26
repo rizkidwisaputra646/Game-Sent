@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useMemo, useState } from "react";
-import { motion, useReducedMotion } from "motion/react";
 import {
   CheckCircle2,
   Download,
@@ -10,14 +9,11 @@ import {
   Info,
   ShieldCheck,
 } from "lucide-react";
-import {
-  ScrollReveal,
-  StaggerGroup,
-  StaggerItem,
-} from "@/components/motion/ScrollPrimitives";
 import { useGameSent } from "@/components/providers/GameSentProvider";
+import { ComicPopCallout, MangaShake } from "@/components/motion/AnimeComicMotion";
 import { CountUpNumber } from "@/components/ui/CountUpNumber";
-import { HudCard } from "@/components/ui/HudCard";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { PrimaryButton } from "@/components/ui/Buttons";
 import { AlgorithmBadge, SentimentBadge } from "@/components/ui/StatusBadge";
 import { getCachedResearchDataset } from "@/lib/data/research-cache";
 import {
@@ -30,7 +26,6 @@ import {
 import type { AnalysisSessionRecord } from "@/lib/storage/indexed-db";
 
 export default function ReportsPage() {
-  const shouldReduceMotion = useReducedMotion();
   const { metadata, history, activeSession, openSessionById } = useGameSent();
 
   const [selectedSource, setSelectedSource] = useState<string>(
@@ -107,9 +102,7 @@ export default function ReportsPage() {
       });
     }
 
-    // Use cached 4,997-row research dataset for export
     const records = await getCachedResearchDataset();
-
     const ml = metadata.dataset.games["Mobile Legends"];
     const dota = metadata.dataset.games["Dota 2"];
 
@@ -155,7 +148,7 @@ export default function ReportsPage() {
       if (fmt === "csv") filename = exportReportCsv(payload);
       if (fmt === "xlsx") filename = await exportReportXlsx(payload);
       if (fmt === "pdf") filename = await exportReportPdf(payload);
-      setExportFeedback(`Berhasil mengunduh laporan: ${filename}`);
+      setExportFeedback(`Laporan berhasil diunduh: ${filename}`);
     } catch (err) {
       setExportError(
         err instanceof Error ? err.message : "Gagal mengekspor laporan."
@@ -167,202 +160,198 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
+      <PageHeader
+        title="Reports &amp; Export"
+        tag="PUBLIKASI LAPORAN"
+        description="Hasil analisis sentimen, distribusi game MOBA, dan metrik evaluasi model dapat diekspor ke dokumen formal PDF, lembar kerja XLSX, atau file data CSV."
+      />
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Configuration Panel (Fade Up) */}
-        <ScrollReveal variant="fade-up" className="lg:col-span-5">
-        <HudCard tone="violet" hudTag="Konfigurasi Ekspor" className="h-full">
-          <h2 className="font-display text-lg font-semibold text-[#F1F5F9]">
-            Buat &amp; Ekspor Laporan
+        {/* Left: Configuration & Export Triggers */}
+        <div className="lg:col-span-5 rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3.5px_3.5px_0px_#202020]">
+          <h2 className="font-display text-lg font-bold text-[#171717]">
+            Konfigurasi Dokumen Laporan
           </h2>
-          <p className="mt-1 text-xs text-[#94A3B8]">
-            Unduh hasil analisis dalam format CSV, XLSX (Excel), atau PDF. Label
-            aktual dan prediksi model selalu dipisahkan secara eksplisit.
+          <p className="mt-1 text-xs text-[#666666]">
+            Pilih sumber data yang akan disertakan dalam file laporan riset.
           </p>
 
           <div className="mt-5 space-y-4 text-xs">
             <div>
-              <label className="block font-medium text-[#F1F5F9]">
-                Sumber Laporan
+              <label className="block font-bold text-[#171717] mb-1">
+                Sumber Data
               </label>
               <select
                 value={selectedSource}
                 onChange={(e) => setSelectedSource(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-[#263149] bg-[#080B18] px-3 py-2.5 text-[#F1F5F9]"
+                className="w-full rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-2.5 font-bold text-[#171717]"
               >
                 <option value="research">
-                  Dataset Penelitian Utama ({metadata.dataset.totalReviews} ulasan)
+                  Dataset Penelitian Utama ({metadata.dataset.totalReviews.toLocaleString("id-ID")} ulasan)
                 </option>
                 {history.map((s) => (
                   <option key={s.id} value={s.id}>
-                    [Lokal] {s.sessionName} ({s.totalRows} baris)
+                    [Sesi Lokal] {s.sessionName} ({s.totalRows} baris)
                   </option>
                 ))}
               </select>
             </div>
 
             <div>
-              <label className="block font-medium text-[#F1F5F9]">
+              <label className="block font-bold text-[#171717] mb-1">
                 Judul Laporan
               </label>
               <input
                 type="text"
                 value={customTitle}
                 onChange={(e) => setCustomTitle(e.target.value)}
-                className="mt-1.5 w-full rounded-lg border border-[#263149] bg-[#080B18] px-3 py-2.5 text-[#F1F5F9]"
+                className="w-full rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-2.5 font-bold text-[#171717]"
               />
             </div>
 
-            <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3 text-[11px] text-[#94A3B8] space-y-1">
-              <div className="flex items-center gap-1.5 font-semibold text-[#22C55E]">
-                <ShieldCheck className="h-3.5 w-3.5" />
-                Aturan Integritas Ekspor
+            <div className="rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-3.5 text-xs text-[#171717] space-y-1.5">
+              <div className="flex items-center gap-1.5 font-bold text-[#228448]">
+                <ShieldCheck className="h-4 w-4" />
+                Integritas Ilmiah Dokumen
               </div>
-              <p>
-                • Dataset asli tidak dimodifikasi.<br />
-                • Kolom <code>actual_label</code> dan <code>predicted_sentiment</code> dipisahkan.<br />
-                • File diunduh langsung ke perangkat pengguna tanpa penyimpanan server.
+              <p className="text-[11px] text-[#666666] leading-relaxed">
+                • Dataset penelitian tidak dimodifikasi sama sekali.<br />
+                • Kolom <code>actual_label</code> dan <code>predicted_sentiment</code> dibedakan secara tegas.<br />
+                • Dokumen dihasilkan langsung di browser pengguna tanpa transfer data server.
               </p>
             </div>
 
             {exportFeedback && (
-              <motion.div
-                key={exportFeedback}
-                initial={shouldReduceMotion ? false : { opacity: 0.7, scale: 0.97 }}
-                animate={
-                  shouldReduceMotion
-                    ? { opacity: 1 }
-                    : { opacity: 1, scale: [0.97, 1.015, 1] }
-                }
-                transition={{ duration: shouldReduceMotion ? 0 : 0.38 }}
-                className="flex items-center gap-2 rounded-lg border border-[#22C55E]/35 bg-[#22C55E]/10 p-3 text-xs text-[#86EFAC]"
-              >
-                <CheckCircle2 className="h-4 w-4 shrink-0" />
-                <span>{exportFeedback}</span>
-              </motion.div>
-            )}
-
-            {exportError && (
-              <div className="rounded-lg border border-[#F43F5E]/40 bg-[#F43F5E]/10 p-3 text-xs text-[#FDA4AF]">
-                {exportError}
+              <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border-2 border-[#202020] bg-[#65C98A]/25 p-3 text-xs font-bold text-[#228448]">
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  <span>{exportFeedback}</span>
+                </div>
+                <ComicPopCallout text="EXPORTED!" tone="positive" tilt={-2} />
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 pt-1">
-              <button
+            {exportError && (
+              <MangaShake shakeKey={exportError}>
+                <div className="rounded-xl border-2 border-[#202020] bg-[#FA7777]/25 p-3 text-xs font-bold text-[#BA2A2A]">
+                  {exportError}
+                </div>
+              </MangaShake>
+            )}
+
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 pt-2">
+              <PrimaryButton
                 type="button"
                 disabled={exporting !== null}
                 onClick={() => void handleExport("csv")}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#22D3EE]/45 bg-[#22D3EE]/15 px-4 py-2.5 text-xs font-semibold text-[#F1F5F9] transition hover:bg-[#22D3EE]/25 disabled:opacity-50"
+                isLoading={exporting === "csv"}
+                icon={<Download className="h-4 w-4" />}
+                size="sm"
               >
-                <Download className="h-4 w-4 text-[#22D3EE]" />
-                {exporting === "csv" ? "Ekspor..." : "Ekspor CSV"}
-              </button>
-              <button
+                Format CSV
+              </PrimaryButton>
+
+              <PrimaryButton
                 type="button"
+                variant="secondary"
                 disabled={exporting !== null}
                 onClick={() => void handleExport("xlsx")}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#22C55E]/45 bg-[#22C55E]/15 px-4 py-2.5 text-xs font-semibold text-[#F1F5F9] transition hover:bg-[#22C55E]/25 disabled:opacity-50"
+                isLoading={exporting === "xlsx"}
+                icon={<FileSpreadsheet className="h-4 w-4 text-[#228448]" />}
+                size="sm"
               >
-                <FileSpreadsheet className="h-4 w-4 text-[#22C55E]" />
-                {exporting === "xlsx" ? "Ekspor..." : "Ekspor XLSX"}
-              </button>
-              <button
+                Format XLSX
+              </PrimaryButton>
+
+              <PrimaryButton
                 type="button"
+                variant="primary"
                 disabled={exporting !== null}
                 onClick={() => void handleExport("pdf")}
-                className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#8B5CF6]/45 bg-[#8B5CF6]/20 px-4 py-2.5 text-xs font-semibold text-[#F1F5F9] transition hover:bg-[#8B5CF6]/30 disabled:opacity-50"
+                isLoading={exporting === "pdf"}
+                icon={<FileText className="h-4 w-4 text-[#171717]" />}
+                size="sm"
               >
-                <FileText className="h-4 w-4 text-[#A78BFA]" />
-                {exporting === "pdf" ? "Ekspor..." : "Ekspor PDF"}
-              </button>
+                Format PDF
+              </PrimaryButton>
             </div>
           </div>
-        </HudCard>
-        </ScrollReveal>
+        </div>
 
-        {/* Preview Panel (Fade & Scale) */}
-        <ScrollReveal variant="fade-scale" delay={0.08} className="lg:col-span-7">
-        <HudCard tone="cyan" hudTag="Pratinjau Konten Laporan" className="h-full">
-          <div className="flex flex-wrap items-start justify-between gap-2 border-b border-[#263149] pb-4">
+        {/* Right: Preview Panel */}
+        <div className="lg:col-span-7 rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-5 shadow-[3.5px_3.5px_0px_#202020]">
+          <div className="flex flex-wrap items-start justify-between gap-2 pb-4 border-b-2 border-[#202020]/10">
             <div>
-              <h3 className="font-display text-lg font-semibold text-[#F1F5F9]">
+              <h3 className="font-display text-lg font-bold text-[#171717]">
                 {previewSummary.title}
               </h3>
-              <p className="mt-1 text-xs text-[#94A3B8]">
-                Sumber:{" "}
-                <code className="rounded bg-[#080B18] px-1.5 py-0.5 text-[#F1F5F9]">
-                  {previewSummary.datasetSource}
-                </code>
+              <p className="mt-0.5 text-xs text-[#666666]">
+                Sumber: <strong className="text-[#171717]">{previewSummary.datasetSource}</strong>
               </p>
             </div>
             {previewSummary.algorithm === "research_dataset" ? (
-              <span className="rounded-md border border-[#3B82F6]/40 bg-[#3B82F6]/12 px-2.5 py-1 text-xs text-[#93C5FD]">
-                Dataset Penelitian (Label Asli)
+              <span className="rounded-md border-2 border-[#202020] bg-[#A78BFA] px-2.5 py-1 text-xs font-bold text-[#171717] shadow-[1.5px_1.5px_0px_#202020]">
+                Dataset Penelitian Asli
               </span>
             ) : (
               <AlgorithmBadge algorithm={previewSummary.algorithm} />
             )}
           </div>
 
-          <StaggerGroup staggerMs={80} className="mt-4 grid grid-cols-3 gap-3">
-            <StaggerItem variant="slide-up">
-            <div className="rounded-lg border border-[#263149] bg-[#080B18]/80 p-3">
-              <div className="text-[11px] text-[#94A3B8]">Total Review</div>
-              <div className="font-mono-num mt-1 text-xl font-bold text-[#F1F5F9]">
+          {/* Quick Metrics */}
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            <div className="rounded-lg border-2 border-[#202020] bg-[#F7F4EC] p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+              <span className="block text-[10px] font-mono font-bold text-[#666666] uppercase">Total Ulasan</span>
+              <span className="font-display text-xl font-bold text-[#171717]">
                 <CountUpNumber value={previewSummary.total} />
-              </div>
+              </span>
             </div>
-            </StaggerItem>
-            <StaggerItem variant="slide-up">
-            <div className="rounded-lg border border-[#22C55E]/30 bg-[#22C55E]/10 p-3">
-              <div className="text-[11px] text-[#86EFAC]">Positif</div>
-              <div className="font-mono-num mt-1 text-xl font-bold text-[#22C55E]">
+            <div className="rounded-lg border-2 border-[#202020] bg-[#65C98A]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+              <span className="block text-[10px] font-mono font-bold text-[#228448] uppercase">Positif</span>
+              <span className="font-display text-xl font-bold text-[#228448]">
                 <CountUpNumber value={previewSummary.positive} />
-              </div>
+              </span>
             </div>
-            </StaggerItem>
-            <StaggerItem variant="slide-up">
-            <div className="rounded-lg border border-[#F43F5E]/30 bg-[#F43F5E]/10 p-3">
-              <div className="text-[11px] text-[#FDA4AF]">Negatif</div>
-              <div className="font-mono-num mt-1 text-xl font-bold text-[#F43F5E]">
+            <div className="rounded-lg border-2 border-[#202020] bg-[#FA7777]/25 p-3 text-center shadow-[1.5px_1.5px_0px_#202020]">
+              <span className="block text-[10px] font-mono font-bold text-[#BA2A2A] uppercase">Negatif</span>
+              <span className="font-display text-xl font-bold text-[#BA2A2A]">
                 <CountUpNumber value={previewSummary.negative} />
-              </div>
+              </span>
             </div>
-            </StaggerItem>
-          </StaggerGroup>
+          </div>
 
           {loadedSession ? (
             <div className="mt-5">
-              <h4 className="mb-2 text-xs font-semibold text-[#94A3B8]">
-                Sampel Baris Sesi (maks. 8 baris pertama)
+              <h4 className="mb-2 text-xs font-bold text-[#666666] uppercase font-mono">
+                Pratinjau 8 Baris Pertama Sesi:
               </h4>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-lg border-2 border-[#202020]">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[#263149] text-[#94A3B8]">
-                      <th className="py-2 pr-3">#</th>
-                      <th className="py-2 pr-4">Ulasan</th>
-                      <th className="py-2 pr-3">Label Aktual</th>
-                      <th className="py-2">Prediksi Model</th>
+                    <tr className="border-b-2 border-[#202020] bg-[#F7F4EC] font-mono font-bold text-[#171717]">
+                      <th className="py-2.5 px-3 w-12">#</th>
+                      <th className="py-2.5 px-3">Teks Ulasan</th>
+                      <th className="py-2.5 px-3 w-28">Label Aktual</th>
+                      <th className="py-2.5 px-3 w-28">Prediksi</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#263149]/60">
+                  <tbody className="divide-y border-[#202020]/20 bg-[#FFFDFC]">
                     {loadedSession.rows.slice(0, 8).map((r) => (
                       <tr key={r.rowIndex}>
-                        <td className="font-mono-num py-2 pr-3 text-[#94A3B8]">
-                          {r.rowIndex}
+                        <td className="py-2 px-3 font-mono font-bold text-[#666666]">
+                          #{r.rowIndex}
                         </td>
-                        <td className="max-w-sm truncate py-2 pr-4 text-[#E2E8F0]">
+                        <td className="max-w-sm truncate py-2 px-3 text-[#171717]">
                           {r.review}
                         </td>
-                        <td className="py-2 pr-3">
+                        <td className="py-2 px-3">
                           {r.actualLabel ? (
                             <SentimentBadge sentiment={r.actualLabel} size="xs" />
                           ) : (
-                            <span className="text-[#64748B]">-</span>
+                            <span className="text-[#666666]">-</span>
                           )}
                         </td>
-                        <td className="py-2">
+                        <td className="py-2 px-3">
                           <SentimentBadge sentiment={r.predictedLabel} size="xs" />
                         </td>
                       </tr>
@@ -372,31 +361,20 @@ export default function ReportsPage() {
               </div>
             </div>
           ) : (
-            <div className="mt-5 rounded-xl border border-[#263149] bg-[#080B18]/75 p-4 text-xs text-[#CBD5E1] space-y-2">
-              <div className="flex items-center gap-2 font-semibold text-[#22D3EE]">
+            <div className="mt-5 rounded-xl border-2 border-[#202020] bg-[#F7F4EC] p-4 text-xs text-[#171717] space-y-2">
+              <div className="flex items-center gap-2 font-bold text-[#8060D8]">
                 <Info className="h-4 w-4" />
-                Ringkasan Dataset Penelitian yang Akan Diekspor
+                Cakupan Dataset Penelitian
               </div>
-              <p>
-                Ekspor akan menyertakan seluruh{" "}
-                <strong className="font-mono-num">
-                  {metadata.dataset.totalReviews.toLocaleString("id-ID")}
-                </strong>{" "}
-                ulasan penelitian (Mobile Legends:{" "}
-                <strong className="font-mono-num">
-                  {metadata.dataset.games["Mobile Legends"].total}
-                </strong>
-                , Dota 2:{" "}
-                <strong className="font-mono-num">
-                  {metadata.dataset.games["Dota 2"].total}
-                </strong>
-                ) beserta kolom <code>actual_label</code> dan <code>label_source</code>{" "}
-                asli tanpa mengubah data penelitian.
+              <p className="leading-relaxed">
+                Ekspor mencakup seluruh{" "}
+                <strong>{metadata.dataset.totalReviews.toLocaleString("id-ID")}</strong> ulasan
+                (Mobile Legends: <strong>{metadata.dataset.games["Mobile Legends"].total}</strong>, Dota 2: <strong>{metadata.dataset.games["Dota 2"].total}</strong>)
+                beserta kolom <code>id</code>, <code>game</code>, <code>review</code>, <code>label</code>, dan <code>label_source</code>.
               </p>
             </div>
           )}
-        </HudCard>
-        </ScrollReveal>
+        </div>
       </div>
     </div>
   );
