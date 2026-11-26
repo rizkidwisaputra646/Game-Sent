@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 
 export function MangaSparkle({
   className = "h-4 w-4 text-[#A78BFA]",
@@ -46,46 +46,72 @@ export function MangaBurstTicks({
   );
 }
 
+const HERO_CHARACTERS = {
+  all: {
+    src: "/images/anime-hero.png",
+    alt: "GameSent Anime Analyst Character",
+    width: 360,
+    height: 394,
+  },
+  "Dota 2": {
+    src: "/images/hero-dota.png",
+    alt: "Dota 2 Invoker Anime Editorial Character",
+    width: 380,
+    height: 398,
+  },
+  "Mobile Legends": {
+    src: "/images/hero-mlbb.png",
+    alt: "Mobile Legends Alucard Anime Editorial Character",
+    width: 380,
+    height: 292,
+  },
+} as const;
+
 /**
- * Custom Stylized Anime Character Hero Portrait (transparent PNG) with subtle idle float
+ * Dynamic Anime Character Hero Portrait (switches smoothly between Analyst, Invoker, and Alucard)
  */
 export function AnimeHeroPortrait({
+  variant = "all",
   className = "",
   idleFloat = true,
 }: {
+  variant?: "all" | "Dota 2" | "Mobile Legends";
   className?: string;
   idleFloat?: boolean;
 }) {
   const shouldReduceMotion = useReducedMotion();
-
-  if (!idleFloat || shouldReduceMotion) {
-    return (
-      <Image
-        src="/images/anime-hero.png"
-        alt="GameSent Anime Analyst Character"
-        width={360}
-        height={394}
-        priority
-        className={`select-none pointer-events-none object-contain ${className}`}
-      />
-    );
-  }
+  const asset = HERO_CHARACTERS[variant] ?? HERO_CHARACTERS.all;
 
   return (
-    <motion.div
-      animate={{ y: [0, -5, 0] }}
-      transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-      className="w-full h-full"
-    >
-      <Image
-        src="/images/anime-hero.png"
-        alt="GameSent Anime Analyst Character"
-        width={360}
-        height={394}
-        priority
-        className={`select-none pointer-events-none object-contain ${className}`}
-      />
-    </motion.div>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={variant}
+        initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.9, y: 10 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.94, y: 6 }}
+        transition={{ duration: shouldReduceMotion ? 0 : 0.24, ease: [0.22, 1, 0.36, 1] }}
+        className="w-full h-full flex items-end justify-center"
+      >
+        <motion.div
+          animate={
+            idleFloat && !shouldReduceMotion
+              ? { y: [0, -4, 0] }
+              : undefined
+          }
+          transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+          className="w-full h-full flex items-end justify-center"
+        >
+          <Image
+            src={asset.src}
+            alt={asset.alt}
+            width={asset.width}
+            height={asset.height}
+            priority
+            className={`select-none pointer-events-none object-contain object-bottom ${className}`}
+          />
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
   );
 }
 

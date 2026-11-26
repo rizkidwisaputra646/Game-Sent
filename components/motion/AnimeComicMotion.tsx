@@ -187,11 +187,11 @@ export function ComicPopCallout({
  */
 export function ComicSpeechBubble({
   children,
-  tailPosition = "bottom-right",
+  tailPosition = "right",
   className = "",
 }: {
   children: React.ReactNode;
-  tailPosition?: "bottom-right" | "bottom-left" | "left";
+  tailPosition?: "bottom-right" | "bottom-left" | "left" | "right";
   className?: string;
 }) {
   const shouldReduceMotion = useReducedMotion();
@@ -221,6 +221,12 @@ export function ComicSpeechBubble({
         <span
           aria-hidden="true"
           className="absolute top-1/2 -left-2 -translate-y-1/2 h-3 w-3 rotate-45 border-b-2 border-l-2 border-[#202020] bg-[#FFFDFC]"
+        />
+      )}
+      {tailPosition === "right" && (
+        <span
+          aria-hidden="true"
+          className="absolute top-1/2 -right-2 -translate-y-1/2 h-3 w-3 rotate-45 border-t-2 border-r-2 border-[#202020] bg-[#FFFDFC]"
         />
       )}
     </motion.div>

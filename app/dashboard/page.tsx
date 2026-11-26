@@ -173,82 +173,123 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-4">
-      {/* HERO SECTION WITH EDITORIAL SHAPES, SPARKLES & ANIME CHARACTER */}
-      <div className="relative pt-1 pb-2">
-        {/* Geometric Editorial Shards behind hero */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-2 left-0 hidden sm:block h-10 w-10 border-t-2 border-l-2 border-[#202020]/30 -skew-x-12"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-4 right-[28%] hidden md:block h-10 w-24 -skew-x-12 rounded-sm border-2 border-[#202020] bg-[#F5C85B]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-7 right-[22%] hidden md:block h-9 w-28 -skew-x-12 rounded-sm border-2 border-[#202020] bg-[#DDD6FE]"
-        />
-        <AnimatedSparkle className="hidden md:block absolute top-0 left-[46%] h-6 w-6 text-[#A78BFA]" />
-        <AnimatedSparkle className="hidden md:block absolute top-9 left-[49%] h-3.5 w-3.5 text-[#F5C85B]" delay={1.2} />
-
-        {/* Anime Character with Idle Float + Interactive Comic Speech Bubble */}
-        <div
-          className="hidden lg:block absolute -top-12 right-12 z-10 w-[195px] h-[205px]"
-          onMouseEnter={() => setHeroBubbleHovered(true)}
-          onMouseLeave={() => setHeroBubbleHovered(false)}
-        >
-          <div className="pointer-events-none w-full h-full">
-            <AnimeHeroPortrait className="w-full h-full object-contain object-top" />
-          </div>
-          {(heroBubbleHovered || modelStatus.ready) && (
-            <div className="pointer-events-none absolute -left-24 top-3 z-30">
-              <ComicSpeechBubble tailPosition="bottom-right">
-                {heroBubbleHovered ? (
-                  <span className="text-[#8060D8]">SIAP ANALISIS!</span>
-                ) : (
-                  <span className="font-mono text-[10px]">
-                    {gameFilter === "all" ? "DATA READY!" : `FILTER: ${gameFilter.toUpperCase()}`}
-                  </span>
-                )}
-              </ComicSpeechBubble>
-            </div>
-          )}
-        </div>
-
-        <div className="relative z-20 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between lg:pr-[220px]">
-          <div>
+      {/* HERO SECTION WITH EDITORIAL SHAPES, SPARKLES & DYNAMIC ANIME CHARACTER */}
+      <div className="relative pt-1">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          {/* Left Side: Heading, Subtitle, and Non-overlapping Filter Pills */}
+          <div className="relative z-20 flex-1 min-w-0 pb-2">
             <div className="flex flex-wrap items-center gap-2.5 mb-1">
               <h1 className="font-display text-3xl font-extrabold tracking-tight text-[#171717] sm:text-[38px] leading-none">
                 Dashboard Overview
               </h1>
               {modelStatus.ready && (
-                <ComicPopCallout text="DATA READY!" tone="primary" tilt={-2} />
+                <ComicPopCallout
+                  key={`callout-${gameFilter}`}
+                  text={
+                    gameFilter === "Dota 2"
+                      ? "DOTA 2"
+                      : gameFilter === "Mobile Legends"
+                      ? "MLBB"
+                      : "DATA READY!"
+                  }
+                  tone={
+                    gameFilter === "Dota 2"
+                      ? "dota"
+                      : gameFilter === "Mobile Legends"
+                      ? "mlbb"
+                      : "primary"
+                  }
+                  tilt={-2}
+                />
               )}
+              <AnimatedSparkle className="hidden sm:inline-block h-5 w-5 text-[#A78BFA]" />
             </div>
-            <p className="mt-1 text-sm font-medium text-[#555555]">
+
+            <p className="mt-1.5 text-sm font-medium text-[#555555]">
               Gaming sentiment insights at a glance — TF-IDF, Naive Bayes &amp; KNN ({metadata.dataset.totalReviews.toLocaleString("id-ID")} ulasan).
             </p>
+
+            {/* Filter Pills neatly placed below subtitle on the left (zero overlap with hero character) */}
+            <div className="mt-3 inline-flex flex-wrap items-center gap-1 rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-1 shadow-[2px_2px_0px_#202020]">
+              {(["all", "Dota 2", "Mobile Legends"] as GameFilter[]).map((opt) => {
+                const active = gameFilter === opt;
+                const activeStyle =
+                  opt === "Dota 2"
+                    ? "bg-[#D94B43] text-white border border-[#202020]"
+                    : opt === "Mobile Legends"
+                    ? "bg-[#3479D4] text-[#E8BC55] border border-[#202020]"
+                    : "bg-[#A78BFA] text-[#171717] border border-[#202020]";
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => updatePreferences({ dashboardGameFilter: opt })}
+                    className={`rounded-lg px-3 py-1 text-xs font-bold transition-all cursor-pointer ${
+                      active
+                        ? activeStyle
+                        : "text-[#666666] hover:text-[#171717]"
+                    }`}
+                  >
+                    {opt === "all" ? "All Games" : opt}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          {/* Compact Game Filter Pills */}
-          <div className="inline-flex items-center gap-1 rounded-xl border-2 border-[#202020] bg-[#FFFDFC] p-1 shadow-[2px_2px_0px_#202020] self-start">
-            {(["all", "Dota 2", "Mobile Legends"] as GameFilter[]).map((opt) => {
-              const active = gameFilter === opt;
-              return (
-                <button
-                  key={opt}
-                  type="button"
-                  onClick={() => updatePreferences({ dashboardGameFilter: opt })}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-bold transition-all cursor-pointer ${
-                    active
-                      ? "bg-[#A78BFA] text-[#171717] border border-[#202020]"
-                      : "text-[#666666] hover:text-[#171717]"
-                  }`}
-                >
-                  {opt === "all" ? "All Games" : opt}
-                </button>
-              );
-            })}
+          {/* Right Side: Dedicated Safe Zone for Dynamic Character + Speech Bubble + Editorial Shards */}
+          <div
+            className="hidden lg:flex relative z-10 shrink-0 items-end justify-end w-[410px] h-[164px] -mb-4"
+            onMouseEnter={() => setHeroBubbleHovered(true)}
+            onMouseLeave={() => setHeroBubbleHovered(false)}
+          >
+            {/* Geometric Editorial Shards safely behind character */}
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute bottom-8 right-28 h-10 w-24 -skew-x-12 rounded-sm border-2 border-[#202020] bg-[#F5C85B]"
+            />
+            <div
+              aria-hidden="true"
+              className={`pointer-events-none absolute bottom-5 right-16 h-9 w-28 -skew-x-12 rounded-sm border-2 border-[#202020] transition-colors duration-200 ${
+                gameFilter === "Dota 2"
+                  ? "bg-[#FCA5A5]"
+                  : gameFilter === "Mobile Legends"
+                  ? "bg-[#93C5FD]"
+                  : "bg-[#DDD6FE]"
+              }`}
+            />
+            <AnimatedSparkle className="absolute top-2 left-10 h-4 w-4 text-[#F5C85B]" delay={0.9} />
+
+            {/* Speech Bubble cleanly positioned left of character, well below top utility bar */}
+            {(heroBubbleHovered || modelStatus.ready) && (
+              <div className="pointer-events-none relative z-30 mr-2 mb-14 max-w-[185px]">
+                <ComicSpeechBubble key={`bubble-${gameFilter}-${heroBubbleHovered}`} tailPosition="right">
+                  {heroBubbleHovered ? (
+                    <span className="text-[#8060D8]">SIAP ANALISIS!</span>
+                  ) : gameFilter === "Dota 2" ? (
+                    <span className="font-mono text-[10px] text-[#BA2A2A]">
+                      INVOKER • {dotaStats.positivePct.toFixed(1)}% POSITIF
+                    </span>
+                  ) : gameFilter === "Mobile Legends" ? (
+                    <span className="font-mono text-[10px] text-[#1D4ED8]">
+                      ALUCARD • {mlStats.positivePct.toFixed(1)}% POSITIF
+                    </span>
+                  ) : (
+                    <span className="font-mono text-[10px]">
+                      DATA READY! {metadata.dataset.totalReviews.toLocaleString("id-ID")}
+                    </span>
+                  )}
+                </ComicSpeechBubble>
+              </div>
+            )}
+
+            {/* Dynamic Character Portrait */}
+            <div className="pointer-events-none relative z-20 w-[190px] h-[164px] shrink-0">
+              <AnimeHeroPortrait
+                variant={gameFilter}
+                className="w-full h-full object-contain object-bottom"
+              />
+            </div>
           </div>
         </div>
       </div>
